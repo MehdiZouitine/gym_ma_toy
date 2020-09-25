@@ -5,25 +5,10 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-
-CELL_SIZE = 5
-
 ACTION_MEANING = {0: "NOOP", 1: "UP", 2: "DOWN", 3: "LEFT", 4: "RIGHT"}
+NB_ACTIONS = len(ACTION_MEANING)
 
 ELEMENTNS_COLORS = {0: "white", 1: "blue", 2: "red"}  # empty  # Agent  # Target
-
-
-class Map:
-    pass
-
-
-class _Agent:
-    def __init__(self, position: Tuple[int, int]):
-        self.position = position
-        self.value = 1
-
-    def update_position(self, position: Tuple[int, int]) -> None:
-        self.position = position
 
 
 class TeamCatcher(gym.Env):
@@ -52,8 +37,8 @@ class TeamCatcher(gym.Env):
                 ),
             }
         )
-    
-action = {'agent_1': 1, "agent_2": 3}
+
+        # self.map =
 
     def step(self, action):
         pass
@@ -66,7 +51,7 @@ action = {'agent_1': 1, "agent_2": 3}
 
     @classmethod
     def map2image(cls, map):
-        return image
+        pass
 
     @classmethod
     def check_position_agents(cls, agents_position, agents_actions):

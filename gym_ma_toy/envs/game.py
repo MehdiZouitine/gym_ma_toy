@@ -136,7 +136,7 @@ class World:
         size = self.size
         for i in range(size):
             for j in range(size):
-                if map[i, j] == 2:
+                if self.map[i, j] == 2:
                     if self.agent_capture((i, j), size, self.map):
                         self.map[i, j] = 0
                         self.nb_targets -= 1

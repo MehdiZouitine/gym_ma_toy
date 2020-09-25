@@ -30,8 +30,7 @@ class TeamCatcher(gym.Env):
     ):
         self.grid_size = grid_size
         self.action_space = spaces.Dict(
-            {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS)
-             for i in range(nb_agents)}
+            {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agents)}
         )
         self.observation_space = spaces.Dict(
             {
@@ -56,7 +55,7 @@ class TeamCatcher(gym.Env):
             size=grid_size, nb_agents=nb_agents, nb_targets=nb_targets, seed=seed
         )
 
-        self.nb_targets_alive = self.world.nb_targets_alive
+        self.nb_targets_alive = self.world.nb_targets
         self.obs = None  # For render
         self.nb_step = None
 
@@ -66,6 +65,7 @@ class TeamCatcher(gym.Env):
         self.obs = self.world.get_state
 
         new_nb_agents_alive = self.world.nb_targets_alive
+        reward = self.compute_reward(
             current_nb_agents_alive=self.nb_targets_alive,
             new_nb_agents_alive=new_nb_agents_alive,
         )

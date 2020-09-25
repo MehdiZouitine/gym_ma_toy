@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 import gym
 from gym import error, spaces, utils
@@ -77,8 +78,11 @@ class TeamCatcher(gym.Env):
 
     def render(self, mode="human", close=False):
         image = np.zeros((self.grid_size, self.grid_size, 3))
+        image[self.obs == 0] = ELEMENTS_COLORS[0]
         image[self.obs == 1] = ELEMENTS_COLORS[1]
         image[self.obs == 2] = ELEMENTS_COLORS[2]
+        plt.imshow(image)
+        plt.show()
 
     def seed(self, seed: int):
         pass

@@ -13,7 +13,7 @@ class BaseElem(abc.ABC):
         pass
 
 
-class Agent:
+class Agent(BaseElem):
     def __init__(self, id_elem: int, position: Tuple[int, int]):
         self.id = id_elem
         self.position = position

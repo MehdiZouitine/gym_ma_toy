@@ -6,7 +6,7 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-from gym_ma_toy.envs.game import World
+from game import World
 
 ACTION_MEANING = {0: "NOOP", 1: "UP", 2: "DOWN", 3: "LEFT", 4: "RIGHT"}
 NB_ACTIONS = len(ACTION_MEANING)
@@ -21,7 +21,13 @@ ELEMENTS_COLORS = {
 class TeamCatcher(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, grid_size: int = 64, nb_agents: int = 4, nb_targets: int = 8):
+    def __init__(
+        self,
+        grid_size: int = 64,
+        nb_agents: int = 4,
+        nb_targets: int = 8,
+        seed: int = 42,
+    ):
         self.grid_size = grid_size
         self.action_space = spaces.Dict(
             {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agents)}
@@ -46,19 +52,19 @@ class TeamCatcher(gym.Env):
         )
 
         self.world = World(
-            grid_size=grid_size, nb_agents=nb_agents, nb_targets=nb_targets
+            size=grid_size, nb_agents=nb_agents, nb_targets=nb_targets, seed=seed
         )
 
-        self.nb_targets_alive = self.world.targets_alive
+        self.nb_targets_alive = self.world.nb_targets
         self.obs = None  # For render
         self.nb_step = None
 
     def step(self, action):
-        self.world.update(action)
+        self.world.update(action)  # apply action to the engine
 
-        self.obs = self.world.state
+        self.obs = self.world.get_state
 
-        new_nb_agents_alive = self.world.targets_alive
+        new_nb_agents_alive = self.world.nb_targets
         reward = self.compute_reward(
             current_nb_agents_alive=self.nb_targets_alive,
             new_nb_agents_alive=new_nb_agents_alive,
@@ -66,6 +72,7 @@ class TeamCatcher(gym.Env):
         self.nb_targets_alive = new_nb_agents_alive
 
         done = self.episode_end(current_nb_agents_alive=self.nb_targets_alive)
+        self.nb_step += 1
         info = {"step": self.nb_step, "target alive": self.nb_targets_alive}
 
         return self.obs, reward, done, info
@@ -85,7 +92,7 @@ class TeamCatcher(gym.Env):
         plt.show()
 
     def seed(self, seed: int):
-        pass
+        raise NotImplementedError
 
     @classmethod
     def compute_reward(

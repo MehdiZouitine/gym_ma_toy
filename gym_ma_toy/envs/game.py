@@ -27,10 +27,12 @@ class World:
         self.size = size
         self.nb_agents = nb_agents
         self.nb_targets = nb_targets
+        self.targets_alive = nb_targets
+        self.map = np.zeros((size, size))
 
     @property
     def nb_targets_alive(self):
-        return self.nb_targets
+        return self.targets_alive
 
     def reset(self):
         self.map = np.zeros((self.size, self.size))
@@ -139,7 +141,7 @@ class World:
                 if self.map[i, j] == 2:
                     if self.agent_capture((i, j), size, self.map):
                         self.map[i, j] = 0
-                        self.nb_targets -= 1
+                        self.targets_alive -= 1
 
     def update(self, joint_action):
 

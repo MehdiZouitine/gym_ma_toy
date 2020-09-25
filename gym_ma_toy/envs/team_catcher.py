@@ -5,6 +5,8 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
+from gym_ma_toy.envs.game import World
+
 ACTION_MEANING = {0: "NOOP", 1: "UP", 2: "DOWN", 3: "LEFT", 4: "RIGHT"}
 NB_ACTIONS = len(ACTION_MEANING)
 
@@ -14,10 +16,10 @@ ELEMENTNS_COLORS = {0: "white", 1: "blue", 2: "red"}  # empty  # Agent  # Target
 class TeamCatcher(gym.Env):
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, grid_size: int = 64, nb_agent: int = 4):
+    def __init__(self, grid_size: int = 64, nb_agents: int = 4, nb_targets: int = 8):
 
         self.action_space = spaces.Dict(
-            {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agent)}
+            {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agents)}
         )
         self.observation_space = spaces.Dict(
             {
@@ -32,35 +34,57 @@ class TeamCatcher(gym.Env):
                                 spaces.Discrete(grid_size - 1),
                             )
                         )
-                        for i in range(nb_agent)
+                        for i in range(nb_agents)
                     }
                 ),
             }
         )
 
-        # self.map =
+        self.world = World(
+            grid_size=grid_size, nb_agents=nb_agents, nb_targets=nb_targets
+        )
+
+        self.nb_targets_alive = self.world.targets_alive
+        self.obs = None  # For render
+        self.nb_step = None
 
     def step(self, action):
-        pass
+        self.world.update(action)
+
+        self.obs = self.world.state
+
+        new_nb_agents_alive = self.world.targets_alive
+        reward = self.compute_reward(
+            current_nb_agents_alive=self.nb_targets_alive,
+            new_nb_agents_alive=new_nb_agents_alive,
+        )
+        self.nb_targets_alive = new_nb_agents_alive
+
+        done = self.episode_end(current_nb_agents_alive=self.nb_targets_alive)
+        info = {"step": self.nb_step, "target alive": self.nb_targets_alive}
+
+        return self.obs, reward, done, info
 
     def reset(self):
-        pass
+        self.world.reset()
+        self.obs = self.world.state
+        self.nb_step += 1
+        return self.obs
 
     def render(self, mode="human", close=False):
         pass
 
-    @classmethod
-    def map2image(cls, map):
+    def seed(slef, seed: int):
         pass
 
     @classmethod
-    def check_position_agents(cls, agents_position, agents_actions):
-        pass
+    def compute_reward(
+        cls, current_nb_agents_alive: int, new_nb_agents_alive: int
+    ) -> int:
+        return new_nb_agents_alive - current_nb_agents_alive
 
     @classmethod
-    def compute_reward(cls, agents_actions, target_positions):
-        pass
-
-    @classmethod
-    def delete_target(cls, map, target_position_delete):
-        pass
+    def episode_end(cls, current_nb_agents_alive: int):
+        if current_nb_agents_alive == 0:
+            return True
+        return False

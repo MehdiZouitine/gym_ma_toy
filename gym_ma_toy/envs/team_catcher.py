@@ -6,7 +6,7 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-from game import World
+from . import game
 
 ACTION_MEANING = {0: "NOOP", 1: "UP", 2: "DOWN", 3: "LEFT", 4: "RIGHT"}
 NB_ACTIONS = len(ACTION_MEANING)
@@ -51,7 +51,7 @@ class TeamCatcher(gym.Env):
             }
         )
 
-        self.world = World(
+        self.world = game.World(
             size=grid_size, nb_agents=nb_agents, nb_targets=nb_targets, seed=seed
         )
 
@@ -79,16 +79,16 @@ class TeamCatcher(gym.Env):
 
     def reset(self):
         self.world.reset()
-        self.obs = self.world.state
-        self.nb_step += 1
+        self.obs = self.world.get_state
+        self.nb_step = 0
         return self.obs
 
     def render(self, mode="human", close=False):
         image = np.zeros((self.grid_size, self.grid_size, 3))
-        image[self.obs == 0] = ELEMENTS_COLORS[0]
-        image[self.obs == 1] = ELEMENTS_COLORS[1]
-        image[self.obs == 2] = ELEMENTS_COLORS[2]
-        plt.imshow(image)
+        image[self.obs["map"] == 0] = ELEMENTS_COLORS[0]
+        image[self.obs["map"] == 1] = ELEMENTS_COLORS[1]
+        image[self.obs["map"] == 2] = ELEMENTS_COLORS[2]
+        plt.imshow(image / 255)
         plt.show()
 
     def seed(self, seed: int):

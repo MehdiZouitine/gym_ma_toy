@@ -74,7 +74,7 @@ class TeamCatcher(gym.Env):
     def render(self, mode="human", close=False):
         pass
 
-    def seed(slef, seed: int):
+    def seed(self, seed: int):
         pass
 
     @classmethod

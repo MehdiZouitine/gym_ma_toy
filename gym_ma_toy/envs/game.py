@@ -34,12 +34,14 @@ class World:
         return self.nb_targets
 
     def reset(self):
-        all_positions = [(i, j) for j in range(self.size) for i in range(self.size)]
+        all_positions = [(i, j) for j in range(self.size)
+                         for i in range(self.size)]
 
         random_idx = np.arange(0, self.size * self.size)
         np.random.shuffle(random_idx)
 
-        agents_pos = [all_positions[random_idx[i]] for i in range(self.nb_agents)]
+        agents_pos = [all_positions[random_idx[i]]
+                      for i in range(self.nb_agents)]
 
         targets_pos = [
             all_positions[random_idx[i]]
@@ -133,9 +135,10 @@ class World:
         size = self.size
         for i in range(size):
             for j in range(size):
-                if self.agent_capture((i, j), size, self.map):
-                    self.map[i, j] = 0
-                    self.nb_targets -= 1
+                if map[i, j] == 2:
+                    if self.agent_capture((i, j), size, self.map):
+                        self.map[i, j] = 0
+                        self.nb_targets -= 1
 
     def update(self, joint_action):
 

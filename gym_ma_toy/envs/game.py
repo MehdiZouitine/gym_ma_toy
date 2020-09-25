@@ -27,13 +27,13 @@ class World:
         self.size = size
         self.nb_agents = nb_agents
         self.nb_targets = nb_targets
-        self.map = np.zeros((size, size))
 
     @property
     def nb_targets_alive(self):
         return self.nb_targets
 
     def reset(self):
+        self.map = np.zeros((size, size))
         all_positions = [(i, j) for j in range(self.size)
                          for i in range(self.size)]
 

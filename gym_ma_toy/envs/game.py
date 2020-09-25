@@ -120,6 +120,7 @@ class World:
             (pixel[0], pixel[1] - 1),
         ]
         n_agent_neighbour = 0
+
         for neighbour in potential_neighborhood:
             if (
                 neighbour[0] >= 0

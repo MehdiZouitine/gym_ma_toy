@@ -33,7 +33,7 @@ class World:
         return self.nb_targets
 
     def reset(self):
-        self.map = np.zeros((size, size))
+        self.map = np.zeros((self.size, self.size))
         all_positions = [(i, j) for j in range(self.size)
                          for i in range(self.size)]
 

@@ -65,8 +65,7 @@ class TeamCatcher(gym.Env):
 
         self.obs = self.world.get_state
 
-        new_nb_agents_alive = self.world.nb_targets
-        reward = self.compute_reward(
+        new_nb_agents_alive = self.world.nb_targets_alive
             current_nb_agents_alive=self.nb_targets_alive,
             new_nb_agents_alive=new_nb_agents_alive,
         )

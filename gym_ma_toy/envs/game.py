@@ -8,7 +8,7 @@ class BaseElem(abc.ABC):
         self.position = position
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def name(self):
         pass
 

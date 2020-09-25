@@ -36,10 +36,10 @@ class World:
     def reset(self):
         self.targets_alive = self.nb_targets
         self.map = np.zeros((self.size, self.size))
-        all_positions = [(i, j) for j in range(self.size)
-                         for i in range(self.size)]
+        all_positions = [(i, j) for j in range(1, self.size - 1)
+                         for i in range(1, self.size - 1)]
 
-        random_idx = np.arange(0, self.size * self.size)
+        random_idx = np.arange(0, (self.size - 2) * (self.size - 2))
         np.random.shuffle(random_idx)
 
         agents_pos = [all_positions[random_idx[i]]

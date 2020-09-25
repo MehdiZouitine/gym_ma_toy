@@ -17,7 +17,7 @@ class TeamCatcher(gym.Env):
     def __init__(self, grid_size: int = 64, nb_agent: int = 4):
 
         self.action_space = spaces.Dict(
-            {f"agent_{i+1}": spaces.Discrete(5) for i in range(nb_agent)}
+            {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agent)}
         )
         self.observation_space = spaces.Dict(
             {

@@ -1,6 +1,6 @@
 from typing import Tuple
 
-import nympy as np
+import numpy as np
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
@@ -10,14 +10,18 @@ from gym_ma_toy.envs.game import World
 ACTION_MEANING = {0: "NOOP", 1: "UP", 2: "DOWN", 3: "LEFT", 4: "RIGHT"}
 NB_ACTIONS = len(ACTION_MEANING)
 
-ELEMENTNS_COLORS = {0: "white", 1: "blue", 2: "red"}  # empty  # Agent  # Target
+ELEMENTS_COLORS = {
+    0: [255, 255, 255],  # WHITE (empty)
+    1: [0, 0, 255],  # BLUE (agent)
+    2: [255, 0, 0],  # RED (target)
+}
 
 
 class TeamCatcher(gym.Env):
     metadata = {"render.modes": ["human"]}
 
     def __init__(self, grid_size: int = 64, nb_agents: int = 4, nb_targets: int = 8):
-
+        self.grid_size = grid_size
         self.action_space = spaces.Dict(
             {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agents)}
         )
@@ -72,7 +76,9 @@ class TeamCatcher(gym.Env):
         return self.obs
 
     def render(self, mode="human", close=False):
-        pass
+        image = np.zeros((self.grid_size, self.grid_size, 3))
+        image[self.obs == 1] = ELEMENTS_COLORS[1]
+        image[self.obs == 2] = ELEMENTS_COLORS[2]
 
     def seed(self, seed: int):
         pass

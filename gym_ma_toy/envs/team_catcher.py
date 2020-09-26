@@ -26,7 +26,7 @@ ELEMENTS_COLORS = {
 class TeamCatcher(gym.Env):
     metadata = {"render.modes": ["human"]}
     """
-    Inteface gym for the team catcher game.
+    Interface gym for the team catcher game.
     This is a map where targets are randomly placed.
     The objective of the agents is that there are at least two agents on an adjacent cell of a target to catch it.
     When the target is caught the environment returns a reward point.

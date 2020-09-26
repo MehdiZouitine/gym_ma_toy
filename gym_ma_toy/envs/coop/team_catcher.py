@@ -48,8 +48,8 @@ class TeamCatcher(gym.Env):
 
     Parameters:
         grid_size (int): The classifier to bag. Defaults to `64`.
-        nb_agents (int): The number of agents. Defaults to `64`.
-        nb_targets (int): The number of target to catch. Defaults to `32`.
+        nb_agents (int): The number of agents. Defaults to `256`.
+        nb_targets (int): The number of target to catch. Defaults to `128`.
         seed (int): Random number generator seed for reproducibility. Defaults to `None`.
     
     Example:

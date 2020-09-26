@@ -35,13 +35,13 @@ The episode ends when there is no more target on the map.
 
 
 
-![Alt Text](team_catcher_gif.gif)
+![Alt Text](./img/team_catcher_gif.gif)
 
 
 The number of agent and target can be arbitrarily large.
 
 
-![Alt Text](team_catcher_gif_big.gif)
+![Alt Text](./img/team_catcher_gif_big.gif)
 
 
 

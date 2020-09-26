@@ -1,5 +1,5 @@
 from gym.envs.registration import register
-from .envs import TeamCatcher
+from .envs.coop import TeamCatcher
 
 register(
     id="team_catcher-v0",

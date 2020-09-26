@@ -1,4 +1,4 @@
-from gym_ma_toy.envs.game import World
+from gym_ma_toy.envs.coop.game import World
 import numpy as np
 
 

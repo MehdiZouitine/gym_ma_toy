@@ -72,8 +72,8 @@ class TeamCatcher(gym.Env):
     def __init__(
         self,
         grid_size: int = 64,
-        nb_agents: int = 64,
-        nb_targets: int = 32,
+        nb_agents: int = 256,
+        nb_targets: int = 128,
         seed: Optional[int] = None,
     ):
         self.grid_size = grid_size
@@ -104,8 +104,9 @@ class TeamCatcher(gym.Env):
         )
 
         self.nb_targets_alive = self.world.nb_targets
-        self.obs = None  # For render
-        self.nb_step = None
+
+        self.obs: TypeObservation = None  # For render
+        self.nb_step: int = None
 
     def step(
         self, action: TypeAction
@@ -122,7 +123,7 @@ class TeamCatcher(gym.Env):
         )
         self.nb_targets_alive = new_nb_agents_alive
 
-        done = self.episode_end(current_nb_agents_alive=self.nb_targets_alive)
+        done = self.episode_end(current_nb_targets_alive=self.nb_targets_alive)
         self.nb_step += 1
         info = {"step": self.nb_step, "target alive": self.nb_targets_alive}
 
@@ -149,10 +150,12 @@ class TeamCatcher(gym.Env):
     def compute_reward(
         cls, current_nb_agents_alive: int, new_nb_agents_alive: int
     ) -> int:
+        # Returns the number of targets caught at time t
         return new_nb_agents_alive - current_nb_agents_alive
 
     @classmethod
-    def episode_end(cls, current_nb_agents_alive: int) -> bool:
-        if current_nb_agents_alive == 0:
+    def episode_end(cls, current_nb_targets_alive: int) -> bool:
+        # If the number of targets is null then the episode is over.
+        if current_nb_targets_alive == 0:
             return True
         return False

@@ -42,3 +42,14 @@ The number of agent and target can be arbitrarily large.
 
 
 ![Alt Text](team_catcher_gif_big.gif)
+
+
+
+Cite the environment as:
+```
+@misc{amarl2020
+ Author = {Mehdi Zouitine, Adil Zouitine},
+ Title = {Toy environment set for multi-agent reinforcement learning and more},
+ Year = {2020},
+}
+```

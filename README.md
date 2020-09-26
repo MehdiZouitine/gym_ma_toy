@@ -47,6 +47,11 @@ The number of agent and target can be arbitrarily large.
 ![Alt Text](./img/team_catcher_gif_big.gif)
 
 
+### Test
+
+```
+pytest test/
+```
 
 Cite the environment as:
 ```

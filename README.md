@@ -53,3 +53,6 @@ Cite the environment as:
  Year = {2020},
 }
 ```
+#### License
+
+This project is free and open-source software licensed under the MIT license.

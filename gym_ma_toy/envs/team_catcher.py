@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Dict, Union, Any, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +7,11 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 
 from . import game
+
+# TODO IMPLEMENT SEED METHOD
+
+TypeObservation = Dict[str, Union[np.ndarray, Dict[str, int]]]
+TypeAction = Dict[str, int]
 
 ACTION_MEANING = {0: "NOOP", 1: "UP", 2: "DOWN", 3: "LEFT", 4: "RIGHT"}
 NB_ACTIONS = len(ACTION_MEANING)
@@ -20,13 +25,56 @@ ELEMENTS_COLORS = {
 
 class TeamCatcher(gym.Env):
     metadata = {"render.modes": ["human"]}
+    """
+    Inteface gym for the team catcher game.
+    This is a map where targets are randomly placed.
+    The objective of the agents is that there are at least two agents on an adjacent cell of a target to catch it.
+    When the target is caught the environment returns a reward point.
+    The episode ends when there is no more target on the map.
+
+    Observation dict:
+        map: numpy array describe the current state of the game. (0: empty, 1:agent, 2:target)
+        agent_position:
+            agent_1: tuple of his position (x,y)
+            ...
+            agent_n: tuple of his positon (x,y)
+
+    Action for an agent:
+        0: NOOP
+        1: UP
+        2: DOWN
+        3: LEFT
+        4:  RIGHT
+
+    Parameters:
+        grid_size (int): The classifier to bag. Defaults to `64`.
+        nb_agents (int): The number of agents. Defaults to `64`.
+        nb_targets (int): The number of target to catch. Defaults to `32`.
+        seed (int): Random number generator seed for reproducibility. Defaults to `None`.
+    
+    Example:
+
+        In the following example we will show a classic gym loop 
+        using the team catcher environment.
+
+        >>> import gym
+        >>> import gym_ma_toy
+
+        >>> env = gym.make('team_catcher-v0')
+        >>> done = False
+        >>> obs = env.reset()
+        >>> while not done:
+        ...    obs, reward, done, info = env.step(env.action_space.sample())
+        ...    env.render()  
+
+    """
 
     def __init__(
         self,
         grid_size: int = 64,
-        nb_agents: int = 4,
-        nb_targets: int = 8,
-        seed: int = 42,
+        nb_agents: int = 64,
+        nb_targets: int = 32,
+        seed: Optional[int] = None,
     ):
         self.grid_size = grid_size
         self.action_space = spaces.Dict(
@@ -59,7 +107,10 @@ class TeamCatcher(gym.Env):
         self.obs = None  # For render
         self.nb_step = None
 
-    def step(self, action):
+    def step(
+        self, action: TypeAction
+    ) -> Tuple[TypeObservation, float, bool, Dict[str, Any]]:
+
         self.world.update(action)  # apply action to the engine
 
         self.obs = self.world.get_state
@@ -77,7 +128,7 @@ class TeamCatcher(gym.Env):
 
         return self.obs, reward, done, info
 
-    def reset(self):
+    def reset(self) -> TypeObservation:
         self.world.reset()
         self.obs = self.world.get_state
         self.nb_step = 0
@@ -101,7 +152,7 @@ class TeamCatcher(gym.Env):
         return new_nb_agents_alive - current_nb_agents_alive
 
     @classmethod
-    def episode_end(cls, current_nb_agents_alive: int):
+    def episode_end(cls, current_nb_agents_alive: int) -> bool:
         if current_nb_agents_alive == 0:
             return True
         return False

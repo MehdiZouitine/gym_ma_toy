@@ -22,7 +22,7 @@ class Target(BaseElem):
 
 
 class World:
-    def __init__(self, size, nb_agents, nb_targets, seed):
+    def __init__(self, size: int, nb_agents: int, nb_targets: int, seed: int):
         self.seed = seed
         self.size = size
         self.nb_agents = nb_agents

@@ -76,6 +76,14 @@ class TeamCatcher(gym.Env):
         nb_targets: int = 128,
         seed: Optional[int] = None,
     ):
+
+        if (grid_size - 1) ** 2 < nb_agents + nb_targets:
+            population = nb_agents + nb_targets
+            maximum_population = (grid_size - 1) ** 2
+            raise ValueError(
+                f" nb_agents + nb_targets ({population}) should be less than (grid_size - 1) ** 2 ({maximum_population})"
+            )
+
         self.grid_size = grid_size
         self.action_space = spaces.Dict(
             {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agents)}

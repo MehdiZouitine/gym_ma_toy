@@ -1,7 +1,8 @@
 ## Toy Multi agent environment
 
-![Alt Text](./img/logo.png)
-
+<p align="center">
+  <img height="220px" src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/logo.png?raw=true" alt="ma_gym_logo">
+</p>
 Start of a toy gym environment bank for multi-agent reinforcement learning.
 
 This repo contains for the moment a first environment:

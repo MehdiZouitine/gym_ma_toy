@@ -34,9 +34,9 @@ This is a map where targets are randomly placed.
     The episode ends when there is no more target on the map.
 
 
-<center>
+\begin{center}
 ![Alt Text](team_catcher_gif.gif)
-<center>
+\end{center}
 
 The number of agent and target can be arbitrarily large.
 

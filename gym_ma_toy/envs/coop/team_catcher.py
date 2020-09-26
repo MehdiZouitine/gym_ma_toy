@@ -135,7 +135,8 @@ class TeamCatcher(gym.Env):
         self.nb_step = 0
         return self.obs
 
-    def render(self, mode="human", close=False):
+    def render(self, mode="human", close=False, fig_size=4):
+        plt.figure(figsize=(fig_size, fig_size))
         image = np.zeros((self.grid_size, self.grid_size, 3))
         image[self.obs["map"] == 0] = ELEMENTS_COLORS[0]
         image[self.obs["map"] == 1] = ELEMENTS_COLORS[1]

@@ -18,3 +18,18 @@ The number of agent and target can be arbitrarily large.
 
 
 ![Alt Text](team_catcher_gif_big.gif)
+
+
+### How to use it ?
+
+```python
+import gym_ma_toy
+import gym
+env = env = gym.make('team_catcher-v0')
+obs = env.reset()
+done = False
+
+while not done:
+    obs, reward, done, info = env.step(env.action_space.sample())
+    env.render()
+```

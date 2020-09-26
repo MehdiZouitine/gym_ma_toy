@@ -4,6 +4,13 @@ Start of a toy gym environment bank for multi-agent reinforcement learning.
 
 This repo contains for the moment a first environment:
 
+### How to install ?
+```
+git clone https://github.com/MehdiZouitine/gym_ma_toy
+cd gym_ma_toy
+pip install -e .
+```
+
 
 ### How to use it ?
 
@@ -26,10 +33,16 @@ This is a map where targets are randomly placed.
     When the target is caught the environment returns a reward point.
     The episode ends when there is no more target on the map.
 
-![Alt Text](team_catcher_gif.gif)
+
+img[src*='#center'] {
+    display: block;
+    margin: auto;
+}
+
+![Alt Text](team_catcher_gif.gif#center)
 
 
 The number of agent and target can be arbitrarily large.
 
 
-![Alt Text](team_catcher_gif_big.gif)
+![Alt Text](team_catcher_gif_big.gif#center)

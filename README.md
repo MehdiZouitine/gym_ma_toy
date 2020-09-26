@@ -34,15 +34,12 @@ This is a map where targets are randomly placed.
     The episode ends when there is no more target on the map.
 
 
-img[src*='#center'] {
-    display: block;
-    margin: auto;
-}
-
-![Alt Text](team_catcher_gif.gif#center)
-
+<center>
+![Alt Text](team_catcher_gif.gif)
+<center>
 
 The number of agent and target can be arbitrarily large.
 
-
-![Alt Text](team_catcher_gif_big.gif#center)
+<center>
+![Alt Text](team_catcher_gif_big.gif)
+<center>

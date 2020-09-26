@@ -33,13 +33,12 @@ This is a map where targets are randomly placed.
     When the target is caught the environment returns a reward point.
     The episode ends when there is no more target on the map.
 
+<p align="center">
 
-\begin{center}
 ![Alt Text](team_catcher_gif.gif)
-\end{center}
+</p>
 
 The number of agent and target can be arbitrarily large.
 
-<center>
+
 ![Alt Text](team_catcher_gif_big.gif)
-<center>

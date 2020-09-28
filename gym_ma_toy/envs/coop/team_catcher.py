@@ -159,7 +159,7 @@ class TeamCatcher(gym.Env):
 
         image = Image.fromarray(image)
         image = image.resize(
-            (self.grid_size * fig_size, self.grid_size * fig_size), Image.ANTIALIAS
+            (self.grid_size * fig_size, self.grid_size * fig_size), Image.NEAREST
         )
         image = np.array(image, dtype=np.uint8)
         if mode == "rgb_array":

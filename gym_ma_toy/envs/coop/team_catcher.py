@@ -65,8 +65,9 @@ class TeamCatcher(gym.Env):
         >>> done = False
         >>> obs = env.reset()
         >>> while not done:
-        ...    obs, reward, done, info = env.step(env.action_space.sample())
         ...    env.render()
+        ...    obs, reward, done, info = env.step(env.action_space.sample())
+        >>> env.close()
 
     """
 

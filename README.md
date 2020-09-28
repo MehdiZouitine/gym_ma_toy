@@ -18,8 +18,8 @@ pip install -e .
 ### How to use it ?
 
 ```python
-import gym_ma_toy
 import gym
+import gym_ma_toy
 
 env = env = gym.make('team_catcher-v0')
 

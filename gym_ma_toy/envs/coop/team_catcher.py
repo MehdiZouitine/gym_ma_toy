@@ -6,7 +6,7 @@ from PIL import Image
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
-from gym.envs.classic_control import rendering
+
 
 from . import game
 
@@ -165,6 +165,8 @@ class TeamCatcher(gym.Env):
         if mode == "rgb_array":
             return image
         else:
+            from gym.envs.classic_control import rendering
+
             if self.viewer is None:
                 self.viewer = rendering.SimpleImageViewer()
             self.viewer.imshow(image)

@@ -8,7 +8,7 @@ TypeAction = Dict[str, int]
 
 
 ACTIONS = {"NOOP": 0, "UP": 1, "DOWN": 2,
-    "LEFT": 3, "RIGHT": 4}  # actions meaning
+           "LEFT": 3, "RIGHT": 4}  # actions meaning
 
 
 class BaseElem(abc.ABC):
@@ -23,16 +23,18 @@ class Agent(BaseElem):
 
 
 class Target(BaseElem):
+
     def __init__(self, position):
         self.position = position
 
 
 class World:
 
-     """
+    """
     Implementation of the team catcher game. The interface will collect observations from that game.
     """
-    def __init__(self, size:int, nb_agents:int, nb_targets:int, seed:int):
+
+    def __init__(self, size: int, nb_agents: int, nb_targets: int, seed: int):
         """
 
         Parameters
@@ -47,11 +49,12 @@ class World:
             Random seed.
 
         """
-        self.seed = seed
-        self.size = size
-        self.nb_agents = nb_agents
-        self.nb_targets = nb_targets
-        self.targets_alive = self.nb_targets
+
+    self.seed = seed
+    self.size = size
+    self.nb_agents = nb_agents
+    self.nb_targets = nb_targets
+    self.targets_alive = self.nb_targets
 
     @property
     def nb_targets_alive(self) -> int:
@@ -67,8 +70,9 @@ class World:
 
     def reset(self):
         # Restart the game
-        self.targets_alive = self.nb_targets # At each episode the targets are resuscitated.
-        self.map = np.zeros((self.size, self.size)) # and the map is cleaned
+        # At each episode the targets are resuscitated.
+        self.targets_alive = self.nb_targets
+        self.map = np.zeros((self.size, self.size))  # and the map is cleaned
 
         '''We want to place 3 targets and 3 targets randomly on the private grid of its border.
          For that we generate the set of couple (i,j) of our private border map.
@@ -80,7 +84,8 @@ class World:
         random_idx = np.arange(0, (self.size - 2) * (self.size - 2))
         np.random.shuffle(random_idx)
 
-        agents_pos = [all_positions[random_idx[i]] for i in range(self.nb_agents)]
+        agents_pos = [all_positions[random_idx[i]]
+                      for i in range(self.nb_agents)]
         # first nb_agents are randomly selected
 
         targets_pos = [
@@ -96,9 +101,9 @@ class World:
         self.targets = [Target(position=pos) for pos in targets_pos]
 
         for pos in agents_pos:
-            self.map[pos[0], pos[1]] = 1 #Agents are represented by 1
+            self.map[pos[0], pos[1]] = 1  # Agents are represented by 1
         for pos in targets_pos:
-            self.map[pos[0], pos[1]] = 2 # Targets by 2
+            self.map[pos[0], pos[1]] = 2  # Targets by 2
 
         self._update_map()
         self._update_position_state()
@@ -112,7 +117,7 @@ class World:
         self.agent_position = {k: v.position for k, v in self.agents.items()}
         self.state = {"map": self.map, "agent_position": self.agent_position}
 
-    def _update_action(self, action:int, agent_id:str):
+    def _update_action(self, action: int, agent_id: str):
         """
 
         Parameters
@@ -162,7 +167,7 @@ class World:
                 agent.position = (agent.position[0], agent.position[1] + 1)
 
     @classmethod
-    def agent_capture(cls, pixel:Tuple[int,int], size:int, map:np.ndarray)-> bool:
+    def agent_capture(cls, pixel: Tuple[int, int], size: int, map: np.ndarray) -> bool:
         """ Check if a target is captured by the agents
 
         Parameters
@@ -210,7 +215,7 @@ class World:
                         self.map[i, j] = 0
                         self.targets_alive -= 1
 
-    def update(self, joint_action:TypeAction):
+    def update(self, joint_action: TypeAction):
         """Update the map and the agents and targets state
 
         Parameters

@@ -28,6 +28,7 @@ class Target(BaseElem):
 
 
 class World:
+
      """
     Implementation of the team catcher game. The interface will collect observations from that game.
     """
@@ -46,8 +47,6 @@ class World:
             Random seed.
 
         """
-    def __init__(self, size: int, nb_agents: int, nb_targets: int, seed: int):
-
         self.seed = seed
         self.size = size
         self.nb_agents = nb_agents

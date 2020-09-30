@@ -1,5 +1,8 @@
 ## Toy Multi agent environment
 
+<p align="center">
+  <img height="220px" src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/logo.png?raw=true" alt="ma_gym_logo">
+</p>
 Start of a toy gym environment bank for multi-agent reinforcement learning.
 
 This repo contains for the moment a first environment:
@@ -15,18 +18,18 @@ pip install -e .
 ### How to use it ?
 
 ```python
-import gym_ma_toy
 import gym
+import gym_ma_toy
 
 env = env = gym.make('team_catcher-v0')
 
 obs = env.reset()
 done = False
 while not done:
-
+    env.render()
     action = env.action_space.sample()
     obs, reward, done, info = env.step(action)
-    env.render()
+env.close()
 ```
 
 ### Team catcher:
@@ -37,16 +40,31 @@ When the target is caught the environment returns a reward point.
 The episode ends when there is no more target on the map.
 
 
-
-![Alt Text](./img/team_catcher_gif.gif)
-
+<p align="center">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/team_catcher_gif.gif?raw=true" alt="ma_gym_logo">
+</p>
 
 The number of agent and target can be arbitrarily large.
+<p align="center">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/team_catcher_gif_big.gif?raw=true" alt="ma_gym_logo">
+</p>
 
 
-![Alt Text](./img/team_catcher_gif_big.gif)
+### Running multiple environment in parallel
 
+```py
+# Running 8 environment in parallel
+import gym
+import gym_ma_toy
 
+env = gym.vector.make('team_catcher-v0',num_envs=8, asynchronous=True)  
+```
+
+### Test
+
+```
+pytest test/
+```
 
 Cite the environment as:
 ```

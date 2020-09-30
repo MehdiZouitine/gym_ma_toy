@@ -2,9 +2,11 @@ from typing import Tuple, Dict, Union, Any, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
+from gym.envs.classic_control import rendering
 
 from . import game
 
@@ -24,7 +26,6 @@ ELEMENTS_COLORS = {
 
 
 class TeamCatcher(gym.Env):
-    metadata = {"render.modes": ["human"]}
     """
     Interface gym for the team catcher game.
     This is a map where targets are randomly placed.
@@ -51,10 +52,10 @@ class TeamCatcher(gym.Env):
         nb_agents (int): The number of agents. Defaults to `256`.
         nb_targets (int): The number of target to catch. Defaults to `128`.
         seed (int): Random number generator seed for reproducibility. Defaults to `None`.
-    
+
     Example:
 
-        In the following example we will show a classic gym loop 
+        In the following example we will show a classic gym loop
         using the team catcher environment.
 
         >>> import gym
@@ -64,10 +65,13 @@ class TeamCatcher(gym.Env):
         >>> done = False
         >>> obs = env.reset()
         >>> while not done:
+        ...    env.render()
         ...    obs, reward, done, info = env.step(env.action_space.sample())
-        ...    env.render()  
+        >>> env.close()
 
     """
+
+    metadata = {"render.modes": ["human", "rgb_array"]}
 
     def __init__(
         self,
@@ -114,6 +118,9 @@ class TeamCatcher(gym.Env):
         self.nb_targets_alive = self.world.nb_targets
 
         self.obs: TypeObservation = None  # For render
+        self.viewer = None  #  For render
+        self.grid_size = grid_size  # For render
+
         self.nb_step: int = None
 
     def step(
@@ -143,14 +150,30 @@ class TeamCatcher(gym.Env):
         self.nb_step = 0
         return self.obs
 
-    def render(self, mode="human", close=False, fig_size=4):
-        plt.figure(figsize=(fig_size, fig_size))
-        image = np.zeros((self.grid_size, self.grid_size, 3))
+    def render(self, mode="human", close=False, fig_size=8):
+
+        image = np.zeros((self.grid_size, self.grid_size, 3), dtype=np.uint8)
         image[self.obs["map"] == 0] = ELEMENTS_COLORS[0]
         image[self.obs["map"] == 1] = ELEMENTS_COLORS[1]
         image[self.obs["map"] == 2] = ELEMENTS_COLORS[2]
-        plt.imshow(image / 255)
-        plt.show()
+
+        image = Image.fromarray(image)
+        image = image.resize(
+            (self.grid_size * fig_size, self.grid_size * fig_size), Image.NEAREST
+        )
+        image = np.array(image, dtype=np.uint8)
+        if mode == "rgb_array":
+            return image
+        else:
+            if self.viewer is None:
+                self.viewer = rendering.SimpleImageViewer()
+            self.viewer.imshow(image)
+            return self.viewer.isopen
+
+    def close(self):
+        if self.viewer:
+            self.viewer.close()
+            self.viewer = None
 
     def seed(self, seed: int):
         raise NotImplementedError

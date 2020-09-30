@@ -50,11 +50,11 @@ class World:
 
         """
 
-    self.seed = seed
-    self.size = size
-    self.nb_agents = nb_agents
-    self.nb_targets = nb_targets
-    self.targets_alive = self.nb_targets
+        self.seed = seed
+        self.size = size
+        self.nb_agents = nb_agents
+        self.nb_targets = nb_targets
+        self.targets_alive = self.nb_targets
 
     @property
     def nb_targets_alive(self) -> int:

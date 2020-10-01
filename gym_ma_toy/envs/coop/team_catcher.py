@@ -120,6 +120,7 @@ class TeamCatcher(gym.Env):
         self.grid_size = grid_size  # For render
 
         self.nb_step: int = None
+        self.seed(seed)
 
     def step(
         self, action: TypeAction

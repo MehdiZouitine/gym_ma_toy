@@ -185,7 +185,7 @@ class TeamCatcher(gym.Env):
         cls, current_nb_agents_alive: int, new_nb_agents_alive: int
     ) -> int:
         # Returns the number of targets caught at time t
-        return new_nb_agents_alive - current_nb_agents_alive
+        return current_nb_agents_alive - new_nb_agents_alive
 
     @classmethod
     def episode_end(cls, current_nb_targets_alive: int) -> bool:

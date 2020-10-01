@@ -148,6 +148,7 @@ class TeamCatcher(gym.Env):
         self.world.reset()
         self.obs = self.world.get_state
         self.nb_step = 0
+        self.nb_targets_alive =  self.world.nb_targets_alive
         return self.obs
 
     def render(self, mode="human", close=False, fig_size=8):

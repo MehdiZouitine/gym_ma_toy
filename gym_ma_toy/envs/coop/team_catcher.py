@@ -10,8 +10,6 @@ from gym.utils import seeding
 
 from . import game
 
-# TODO IMPLEMENT SEED METHOD
-
 TypeObservation = Dict[str, Union[np.ndarray, Dict[str, int]]]
 TypeAction = Dict[str, int]
 
@@ -148,7 +146,7 @@ class TeamCatcher(gym.Env):
         self.world.reset()
         self.obs = self.world.get_state
         self.nb_step = 0
-        self.nb_targets_alive =  self.world.nb_targets_alive
+        self.nb_targets_alive = self.world.nb_targets_alive
         return self.obs
 
     def render(self, mode="human", close=False, fig_size=8):
@@ -178,8 +176,9 @@ class TeamCatcher(gym.Env):
             self.viewer.close()
             self.viewer = None
 
-    def seed(self, seed: int):
-        raise NotImplementedError
+    def seed(self, seed: int = None):
+        np.random.seed(seed)
+        return
 
     @classmethod
     def compute_reward(

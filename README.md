@@ -69,7 +69,7 @@ pytest test/
 Cite the environment as:
 ```
 @misc{amarl2020
- Author = {Mehdi Zouitine, Adil Zouitine},
+ Author = {Mehdi Zouitine, Adil Zouitine, Ahmad Berjaoui},
  Title = {Toy environment set for multi-agent reinforcement learning and more},
  Year = {2020},
 }

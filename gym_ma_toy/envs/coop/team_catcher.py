@@ -8,19 +8,10 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 
 
-from . import game
+from .game import World, Actions, MapElement, ElementsColors
 
 TypeObservation = Dict[str, Union[np.ndarray, Dict[str, int]]]
-TypeAction = Dict[str, int]
-
-ACTION_MEANING = {0: "NOOP", 1: "UP", 2: "DOWN", 3: "LEFT", 4: "RIGHT"}
-NB_ACTIONS = len(ACTION_MEANING)
-
-ELEMENTS_COLORS = {
-    0: [255, 255, 255],  # WHITE (empty)
-    1: [0, 0, 255],  # BLUE (agent)
-    2: [255, 0, 0],  # RED (target)
-}
+NB_ACTIONS = len(Actions)
 
 
 class TeamCatcher(gym.Env):
@@ -43,7 +34,7 @@ class TeamCatcher(gym.Env):
         1: UP
         2: DOWN
         3: LEFT
-        4:  RIGHT
+        4: RIGHT
 
     Parameters:
         grid_size (int): The classifier to bag. Defaults to `64`.
@@ -109,7 +100,7 @@ class TeamCatcher(gym.Env):
             }
         )
 
-        self.world = game.World(
+        self.world = World(
             size=grid_size, nb_agents=nb_agents, nb_targets=nb_targets, seed=seed
         )
 
@@ -123,7 +114,7 @@ class TeamCatcher(gym.Env):
         self.seed(seed)
 
     def step(
-        self, action: TypeAction
+        self, action: Actions
     ) -> Tuple[TypeObservation, float, bool, Dict[str, Any]]:
 
         self.world.update(action)  # apply action to the engine
@@ -153,9 +144,10 @@ class TeamCatcher(gym.Env):
     def render(self, mode="human", close=False, fig_size=8):
 
         image = np.zeros((self.grid_size, self.grid_size, 3), dtype=np.uint8)
-        image[self.obs["map"] == 0] = ELEMENTS_COLORS[0]
-        image[self.obs["map"] == 1] = ELEMENTS_COLORS[1]
-        image[self.obs["map"] == 2] = ELEMENTS_COLORS[2]
+
+        image[self.obs["map"] == MapElement.empty] = ElementsColors.empty.value
+        image[self.obs["map"] == MapElement.agent] = ElementsColors.agent.value
+        image[self.obs["map"] == MapElement.target] = ElementsColors.target.value
 
         image = Image.fromarray(image)
         image = image.resize(

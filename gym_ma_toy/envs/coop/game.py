@@ -2,12 +2,38 @@ import abc
 import numpy as np
 import typing
 from typing import Tuple, Dict
-
+from enum import IntEnum, Enum
 
 TypeAction = Dict[str, int]
 
 
-ACTIONS = {"NOOP": 0, "UP": 1, "DOWN": 2, "LEFT": 3, "RIGHT": 4}  # actions meaning
+class Actions(IntEnum):
+    NOOP = 0
+    UP = 1
+    DOWN = 2
+    LEFT = 3
+    RIGHT = 4
+
+
+class ElementsColors(Enum):
+    empty = [255, 255, 255]  # WHITE
+    agent = [0, 0, 255]  # BLUE
+    target = [255, 0, 0]  # RED
+
+
+class MapElement(IntEnum):
+    empty = 0
+    agent = 1
+    target = 2
+
+    def isEmpty(self):
+        return self.value == MapElement.empty.value
+
+    def isAgent(self):
+        return self.value == MapElement.agent.value
+
+    def isTarget(self):
+        return self.value == MapElement.target.value
 
 
 class BaseElem(abc.ABC):
@@ -53,6 +79,9 @@ class World:
         self.nb_agents = nb_agents
         self.nb_targets = nb_targets
         self.targets_alive = self.nb_targets
+        self.map = np.zeros((self.size, self.size))  # initialize map
+        self.agents = dict()
+        self.targets = []
 
     @property
     def nb_targets_alive(self) -> int:
@@ -98,9 +127,9 @@ class World:
         self.targets = [Target(position=pos) for pos in targets_pos]
 
         for pos in agents_pos:
-            self.map[pos[0], pos[1]] = 1  # Agents are represented by 1
+            self.map[pos[0], pos[1]] = MapElement.agent
         for pos in targets_pos:
-            self.map[pos[0], pos[1]] = 2  # Targets by 2
+            self.map[pos[0], pos[1]] = MapElement.target
 
         self._update_map()
         self._update_position_state()
@@ -127,44 +156,50 @@ class World:
         """
         # We check if an action is feasible and do it.
         agent = self.agents[agent_id]
-        if action == ACTIONS["UP"]:
+        if action == Actions.UP:
             if (
                 agent.position[0] - 1 > 0
-                and self.map[agent.position[0] - 1, agent.position[1]] == 0
+                and self.map[agent.position[0] - 1, agent.position[1]]
+                == MapElement.empty
             ):
-                self.map[agent.position[0] - 1, agent.position[1]] = 1
-                self.map[agent.position[0], agent.position[1]] = 0
+                self.map[agent.position[0] - 1, agent.position[1]] = MapElement.agent
+                self.map[agent.position[0], agent.position[1]] = MapElement.empty
                 agent.position = (agent.position[0] - 1, agent.position[1])
 
-        if action == ACTIONS["DOWN"]:
+        if action == Actions.DOWN:
             if (
                 agent.position[0] + 1 < self.size
-                and self.map[agent.position[0] + 1, agent.position[1]] == 0
+                and self.map[agent.position[0] + 1, agent.position[1]]
+                == MapElement.empty
             ):
-                self.map[agent.position[0] + 1, agent.position[1]] = 1
-                self.map[agent.position[0], agent.position[1]] = 0
+                self.map[agent.position[0] + 1, agent.position[1]] = MapElement.agent
+                self.map[agent.position[0], agent.position[1]] = MapElement.empty
                 agent.position = (agent.position[0] + 1, agent.position[1])
 
-        if action == ACTIONS["LEFT"]:
+        if action == Actions.LEFT:
             if (
                 agent.position[1] - 1 > 0
-                and self.map[agent.position[0], agent.position[1] - 1] == 0
+                and self.map[agent.position[0], agent.position[1] - 1]
+                == MapElement.empty
             ):
-                self.map[agent.position[0], agent.position[1] - 1] = 1
-                self.map[agent.position[0], agent.position[1]] = 0
+                self.map[agent.position[0], agent.position[1] - 1] = MapElement.agent
+                self.map[agent.position[0], agent.position[1]] = MapElement.empty
                 agent.position = (agent.position[0], agent.position[1] - 1)
 
-        if action == ACTIONS["RIGHT"]:
+        if action == Actions.RIGHT:
             if (
                 agent.position[1] + 1 < self.size
-                and self.map[agent.position[0], agent.position[1] + 1] == 0
+                and self.map[agent.position[0], agent.position[1] + 1]
+                == MapElement.empty
             ):
-                self.map[agent.position[0], agent.position[1] + 1] = 1
-                self.map[agent.position[0], agent.position[1]] = 0
+                self.map[agent.position[0], agent.position[1] + 1] = MapElement.agent
+                self.map[agent.position[0], agent.position[1]] = MapElement.empty
                 agent.position = (agent.position[0], agent.position[1] + 1)
 
     @classmethod
-    def agent_capture(cls, pixel: Tuple[int, int], size: int, map: np.ndarray) -> bool:
+    def agent_capture(
+        cls, pixel: Tuple[int, int], size: int, world_map: np.ndarray
+    ) -> bool:
         """Check if a target is captured by the agents
 
         Parameters
@@ -173,7 +208,7 @@ class World:
             Target location.
         size : int
             Size of the map.
-        map : np.ndarray
+        world_map : np.ndarray
             The map.
 
         Returns
@@ -192,7 +227,7 @@ class World:
 
         for neighbour in potential_neighborhood:
             if 0 <= neighbour[0] < size and 0 <= neighbour[1] < size:
-                if map[neighbour[0], neighbour[1]] == 1:
+                if world_map[neighbour[0], neighbour[1]] == 1:
                     n_agent_neighbour += 1
         return n_agent_neighbour >= 2
 
@@ -207,7 +242,7 @@ class World:
                         self.map[i, j] = 0
                         self.targets_alive -= 1
 
-    def update(self, joint_action: TypeAction):
+    def update(self, joint_action: Actions):
         """Update the map and the agents and targets state
 
         Parameters

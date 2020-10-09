@@ -7,8 +7,7 @@ from typing import Tuple, Dict
 TypeAction = Dict[str, int]
 
 
-ACTIONS = {"NOOP": 0, "UP": 1, "DOWN": 2,
-           "LEFT": 3, "RIGHT": 4}  # actions meaning
+ACTIONS = {"NOOP": 0, "UP": 1, "DOWN": 2, "LEFT": 3, "RIGHT": 4}  # actions meaning
 
 
 class BaseElem(abc.ABC):
@@ -23,7 +22,6 @@ class Agent(BaseElem):
 
 
 class Target(BaseElem):
-
     def __init__(self, position):
         self.position = position
 
@@ -74,9 +72,9 @@ class World:
         self.targets_alive = self.nb_targets
         self.map = np.zeros((self.size, self.size))  # and the map is cleaned
 
-        '''We want to place 3 targets and 3 targets randomly on the private grid of its border.
+        """We want to place 3 targets and 3 targets randomly on the private grid of its border.
          For that we generate the set of couple (i,j) of our private border map.
-         Then we randomly select nb_agents element in this list and then nb_targets. '''
+         Then we randomly select nb_agents element in this list and then nb_targets. """
 
         all_positions = [
             (i, j) for j in range(1, self.size - 1) for i in range(1, self.size - 1)
@@ -84,8 +82,7 @@ class World:
         random_idx = np.arange(0, (self.size - 2) * (self.size - 2))
         np.random.shuffle(random_idx)
 
-        agents_pos = [all_positions[random_idx[i]]
-                      for i in range(self.nb_agents)]
+        agents_pos = [all_positions[random_idx[i]] for i in range(self.nb_agents)]
         # first nb_agents are randomly selected
 
         targets_pos = [
@@ -168,7 +165,7 @@ class World:
 
     @classmethod
     def agent_capture(cls, pixel: Tuple[int, int], size: int, map: np.ndarray) -> bool:
-        """ Check if a target is captured by the agents
+        """Check if a target is captured by the agents
 
         Parameters
         ----------
@@ -194,19 +191,14 @@ class World:
         n_agent_neighbour = 0
 
         for neighbour in potential_neighborhood:
-            if (
-                neighbour[0] >= 0
-                and neighbour[0] < size
-                and neighbour[1] >= 0
-                and neighbour[1] < size
-            ):
+            if 0 <= neighbour[0] < size and 0 <= neighbour[1] < size:
                 if map[neighbour[0], neighbour[1]] == 1:
                     n_agent_neighbour += 1
         return n_agent_neighbour >= 2
 
     def _update_map(self):
-        ''' For each target, we check if it is captured and if so,
-         we delete it. So we reduce the number of live targets by 1.'''
+        """For each target, we check if it is captured and if so,
+        we delete it. So we reduce the number of live targets by 1."""
         size = self.size
         for i in range(size):
             for j in range(size):

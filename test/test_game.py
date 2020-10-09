@@ -52,3 +52,9 @@ class TestGame:
                 and (np.sum(worlds[i].map[:, worlds[i].size - 1]) == 0)
                 and (np.sum(worlds[i].map) >= worlds[i].nb_agents)
             )
+
+
+if __name__ == "__main__":
+    test = TestGame()
+    test.test_attribute()
+    test.test_reset()

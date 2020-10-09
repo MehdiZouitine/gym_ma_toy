@@ -21,7 +21,7 @@ pip install -e .
 import gym
 import gym_ma_toy
 
-env = env = gym.make('team_catcher-v0')
+env = gym.make('team_catcher-v0')
 
 obs = env.reset()
 done = False

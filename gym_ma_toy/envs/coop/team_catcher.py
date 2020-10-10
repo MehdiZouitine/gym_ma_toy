@@ -67,14 +67,16 @@ class TeamCatcher(gym.Env):
         grid_size: int = 64,
         nb_agents: int = 256,
         nb_targets: int = 128,
+        nb_mobiles: int = 32,
         seed: Optional[int] = None,
     ):
 
         if (grid_size - 1) ** 2 < nb_agents + nb_targets:
-            population = nb_agents + nb_targets
+            population = nb_agents + nb_targets + nb_mobiles
             maximum_population = (grid_size - 1) ** 2
             raise ValueError(
-                f" nb_agents + nb_targets ({population}) should be less than (grid_size - 1) ** 2 ({maximum_population})"
+                f" nb_agents + nb_targets + nb_mobiles ({population}) should "
+                f"be less than (grid_size - 1) ** 2 ({maximum_population})"
             )
 
         self.grid_size = grid_size
@@ -101,10 +103,14 @@ class TeamCatcher(gym.Env):
         )
 
         self.world = World(
-            size=grid_size, nb_agents=nb_agents, nb_targets=nb_targets, seed=seed
+            size=grid_size,
+            nb_agents=nb_agents,
+            nb_targets=nb_targets,
+            nb_mobiles=nb_mobiles,
+            seed=seed,
         )
 
-        self.nb_targets_alive = self.world.nb_targets
+        self.nb_targets_alive = self.world.nb_targets_alive
 
         self.obs: TypeObservation = None  # For render
         self.viewer = None  #  For render
@@ -121,12 +127,11 @@ class TeamCatcher(gym.Env):
 
         self.obs = self.world.get_state
 
-        new_nb_agents_alive = self.world.nb_targets_alive
         reward = self.compute_reward(
-            current_nb_agents_alive=self.nb_targets_alive,
-            new_nb_agents_alive=new_nb_agents_alive,
+            capturedTargets=self.world.capturedTargets,
+            capturedMobiles=self.world.capturedMobiles,
         )
-        self.nb_targets_alive = new_nb_agents_alive
+        self.nb_targets_alive = self.world.nb_targets_alive
 
         done = self.episode_end(current_nb_targets_alive=self.nb_targets_alive)
         self.nb_step += 1
@@ -174,11 +179,9 @@ class TeamCatcher(gym.Env):
         return
 
     @classmethod
-    def compute_reward(
-        cls, current_nb_agents_alive: int, new_nb_agents_alive: int
-    ) -> int:
-        # Returns the number of targets caught at time t
-        return current_nb_agents_alive - new_nb_agents_alive
+    def compute_reward(cls, capturedTargets: int, capturedMobiles: int) -> int:
+        # double points are awarded for captured mobiles
+        return capturedTargets + 2 * capturedMobiles
 
     @classmethod
     def episode_end(cls, current_nb_targets_alive: int) -> bool:

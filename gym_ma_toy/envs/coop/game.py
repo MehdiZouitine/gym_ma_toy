@@ -20,12 +20,14 @@ class ElementsColors(Enum):
     empty = [255, 255, 255]  # WHITE
     agent = [0, 0, 255]  # BLUE
     target = [255, 0, 0]  # RED
+    mobile = [0, 128, 128]  # GREEN
 
 
 class MapElement(IntEnum):
     empty = 0
     agent = 1
     target = 2
+    mobile = 3
 
     def isEmpty(self):
         return self.value == MapElement.empty.value
@@ -34,7 +36,10 @@ class MapElement(IntEnum):
         return self.value == MapElement.agent.value
 
     def isTarget(self):
-        return self.value == MapElement.target.value
+        return self.value == MapElement.target.value or self.value == MapElement.mobile
+
+    def isMobile(self):
+        return self.value == MapElement.mobile
 
 
 class BaseElem(abc.ABC):
@@ -195,7 +200,10 @@ class World:
         for target in self.targets + self.mobiles:
             targetPosition = target.position
             if target.isAlive:
-                self.map[targetPosition[0], targetPosition[1]] = MapElement.target
+                if target.isMobile:
+                    self.map[targetPosition[0], targetPosition[1]] = MapElement.mobile
+                else:
+                    self.map[targetPosition[0], targetPosition[1]] = MapElement.target
             else:
                 # remove dead targets
                 if target.isMobile:

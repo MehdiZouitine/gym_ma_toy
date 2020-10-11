@@ -7,11 +7,13 @@ class TestGame:
         size_list = [10, 20, 100, 200, 1000, 2000, 3000]
         nb_agents_list = [2, 4, 10, 20, 100, 200, 1000]
         nb_targets_list = [2, 4, 10, 20, 100, 200, 1000]
+        nb_mobiles_list = [2, 4, 10, 20, 100, 200, 1000]
         worlds = [
             World(
                 size=size_list[i],
                 nb_agents=nb_agents_list[i],
                 nb_targets=nb_targets_list[i],
+                nb_mobiles=nb_mobiles_list[i],
                 seed=7,
             )
             for i in range(len(size_list))
@@ -21,6 +23,7 @@ class TestGame:
                 (worlds[i].size == size_list[i])
                 and (worlds[i].nb_agents == nb_agents_list[i])
                 and (worlds[i].nb_targets == nb_targets_list[i])
+                and (worlds[i].nb_mobiles == nb_mobiles_list[i])
                 and (worlds[i].seed == 7)
             )
 
@@ -28,11 +31,13 @@ class TestGame:
         size_list = [10, 20, 100, 200, 1000, 2000, 3000]
         nb_agents_list = [2, 4, 10, 20, 100, 200, 1000]
         nb_targets_list = [2, 4, 10, 20, 100, 200, 1000]
+        nb_mobiles_list = [2, 4, 10, 20, 100, 200, 1000]
         worlds = [
             World(
                 size=size_list[i],
                 nb_agents=nb_agents_list[i],
                 nb_targets=nb_targets_list[i],
+                nb_mobiles=nb_mobiles_list[i],
                 seed=7,
             )
             for i in range(len(size_list))
@@ -43,6 +48,7 @@ class TestGame:
                 (worlds[i].size == size_list[i])
                 and (worlds[i].nb_agents == nb_agents_list[i])
                 and (worlds[i].nb_targets == nb_targets_list[i])
+                and (worlds[i].nb_mobiles == nb_mobiles_list[i])
                 and (worlds[i].seed == 7)
                 and
                 # check if the border are equal to 0

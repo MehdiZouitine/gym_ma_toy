@@ -150,10 +150,9 @@ class TeamCatcher(gym.Env):
 
         image = np.zeros((self.grid_size, self.grid_size, 3), dtype=np.uint8)
 
-        image[self.obs["map"] == MapElement.empty] = ElementsColors.empty.value
-        image[self.obs["map"] == MapElement.agent] = ElementsColors.agent.value
-        image[self.obs["map"] == MapElement.target] = ElementsColors.target.value
-        image[self.obs["map"] == MapElement.mobile] = ElementsColors.mobile.value
+        assert len(MapElement) == len(ElementsColors)
+        for element, color in zip(MapElement, ElementsColors):
+            image[self.obs["map"] == element] = color.value
 
         image = Image.fromarray(image)
         image = image.resize(

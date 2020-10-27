@@ -2,7 +2,7 @@ import abc
 import numpy as np
 
 from typing import Tuple, Dict
-from enum import IntEnum, Enum
+from aenum import IntEnum, Enum
 from collections import deque
 
 TypeAction = Dict[str, int]
@@ -14,29 +14,37 @@ class Actions(IntEnum):
     DOWN = 2
     LEFT = 3
     RIGHT = 4
+    UP_RIGHT = 5
+    UP_LEFT = 6
+    DOWN_RIGHT = 7
+    DOWN_LEFT = 8
 
 
 class ElementsColors(Enum):
-    empty = [255, 255, 255]  # WHITE
+    agent_diag = [0, 128, 128]  # BLUE
+    agent_hv = [0, 128, 255]  # BLUE
     agent = [0, 0, 255]  # BLUE
-    target = [255, 0, 0]  # RED
-    mobile = [0, 128, 128]  # GREEN
+    empty = [255, 255, 255]  # WHITE
+    mobile = [255, 0, 0]  # RED
+    target = [255, 128, 0]  # ORANGE
 
 
 class MapElement(IntEnum):
+    agent_diag = -3
+    agent_hv = -2
+    agent = -1
     empty = 0
-    agent = 1
+    mobile = 1
     target = 2
-    mobile = 3
 
     def isEmpty(self):
         return self.value == MapElement.empty.value
 
     def isAgent(self):
-        return self.value == MapElement.agent.value
+        return self.value < MapElement.empty.value
 
     def isTarget(self):
-        return self.value == MapElement.target.value or self.value == MapElement.mobile
+        return self.value > MapElement.empty.value
 
     def isMobile(self):
         return self.value == MapElement.mobile
@@ -49,12 +57,15 @@ class BaseElem(abc.ABC):
         position: Tuple[int, int],
         mobility: bool,
         controllability: bool,
+        has_hv: bool,
+        has_diag: bool,
     ):
         self.id = id_elem
         self.position = position
         self.mobile = mobility
         self.controllable = controllability
-
+        self.hasHV = has_hv
+        self.hasDiag = has_diag
         if self.isControllable:
             assert self.isMobile
 
@@ -66,36 +77,64 @@ class BaseElem(abc.ABC):
     def isControllable(self):
         return self.controllable
 
+    @property
+    def isOmniMobile(self):
+        return self.isMobile and self.hasHV and self.hasDiag
+
 
 class Agent(BaseElem):
-    def __init__(self, id_elem: int, position: Tuple[int, int]):
+    def __init__(
+        self,
+        id_elem: int,
+        position: Tuple[int, int],
+        has_hv: bool = True,
+        has_diag: bool = False,
+    ):
         super().__init__(
-            id_elem=id_elem, position=position, mobility=True, controllability=True
+            id_elem=id_elem,
+            position=position,
+            mobility=True,
+            controllability=True,
+            has_hv=has_hv,
+            has_diag=has_diag,
         )
 
 
 class Target(BaseElem):
-    def __init__(self, position: Tuple[int, int]):
+    def __init__(
+        self, position: Tuple[int, int], has_hv: bool = False, has_diag: bool = False
+    ):
         super().__init__(
-            id_elem=0, position=position, mobility=False, controllability=False
+            id_elem=0,
+            position=position,
+            mobility=False,
+            controllability=False,
+            has_hv=has_hv,
+            has_diag=has_diag,
         )
         self.isAlive = True
 
 
 class MobileTarget(Target):
     def __init__(self, position: Tuple[int, int]):
-        super(MobileTarget, self).__init__(position)
+        super(MobileTarget, self).__init__(position, has_hv=True, has_diag=False)
         self.mobile = True
 
 
-class World:
+class WorldBase:
 
     """
     Implementation of the team catcher game. The interface will collect observations from that game.
     """
 
     def __init__(
-        self, size: int, nb_agents: int, nb_targets: int, nb_mobiles: int, seed: int
+        self,
+        size: int,
+        nb_agents_hv: int,
+        nb_agents_diag: int,
+        nb_targets: int,
+        nb_mobiles: int,
+        seed: int,
     ):
         """
 
@@ -103,8 +142,10 @@ class World:
         ----------
         size : int
             Size of the grid (also called map).
-        nb_agents : int
-            Number of agents.
+        nb_agents_hv : int
+            Number of agents with horizontal/vertical mobility.
+        nb_agents_diag : int
+            Number of agents with horizontal/vertical mobility.
         nb_targets : int
             Number of targets.
         nb_mobiles : int
@@ -116,6 +157,9 @@ class World:
 
         self.seed = seed
         self.size = size
+        self.nb_agents_hv = nb_agents_hv
+        self.nb_agents_diag = nb_agents_diag
+        nb_agents = nb_agents_hv + nb_agents_diag
         self.nb_agents = nb_agents
         self.nb_targets = nb_targets
         self.nb_mobiles = nb_mobiles
@@ -159,7 +203,6 @@ class World:
         np.random.shuffle(random_idx)
 
         agents_pos = [all_positions[random_idx[i]] for i in range(self.nb_agents)]
-        # first nb_agents are randomly selected
 
         targets_pos = [
             all_positions[random_idx[i]]
@@ -167,11 +210,34 @@ class World:
                 self.nb_agents, self.nb_agents + self.nb_targets + self.nb_mobiles
             )
         ]
-        # same for targets
-        self.agents = {
-            f"agent_{i+1}": Agent(id_elem=(i + 1), position=agents_pos[i])
-            for (i, pos) in enumerate(agents_pos)
-        }
+
+        n_hv = self.nb_agents_hv
+        n_diag = self.nb_agents_diag
+        for (agentIdx, pos) in enumerate(agents_pos):
+            if n_hv > 0:
+                self.agents.update(
+                    {
+                        f"agent_{agentIdx + 1}": Agent(
+                            id_elem=(agentIdx + 1),
+                            position=agents_pos[agentIdx],
+                            has_hv=True,
+                            has_diag=False,
+                        )
+                    }
+                )
+                n_hv -= 1
+            elif n_diag > 0:
+                self.agents.update(
+                    {
+                        f"agent_{agentIdx + 1}": Agent(
+                            id_elem=(agentIdx + 1),
+                            position=agents_pos[agentIdx],
+                            has_hv=False,
+                            has_diag=True,
+                        )
+                    }
+                )
+                n_diag -= 1
 
         for i in range(self.nb_targets + self.nb_mobiles):
             if i < self.nb_targets:
@@ -195,7 +261,13 @@ class World:
         # add agents
         for _, agent in self.agents.items():
             agentPosition = agent.position
-            self.map[agentPosition[0], agentPosition[1]] = MapElement.agent
+            element = MapElement.agent
+            if not agent.isOmniMobile:
+                if not agent.hasHV:
+                    element = MapElement.agent_diag
+                else:
+                    element = MapElement.agent_hv
+            self.map[agentPosition[0], agentPosition[1]] = element
         # add targets
         for target in self.targets + self.mobiles:
             targetPosition = target.position
@@ -251,51 +323,93 @@ class World:
 
         """
 
-        if isAgent:
-            element = MapElement.agent
-        else:
-            element = MapElement.target
+        if (
+            action != Actions.NOOP
+            and (mobile.hasHV or mobile.hasDiag)
+            and (
+                (mobile.hasHV and action <= Actions.RIGHT)
+                or (mobile.hasDiag and action >= Actions.UP_RIGHT)
+            )
+        ):
+            if isAgent:
+                element = MapElement.agent
+            else:
+                element = MapElement.target
 
-        # We check if an action is feasible and do it.
-        if action == Actions.UP:
-            if (
-                mobile.position[0] - 1 > 0
-                and self.map[mobile.position[0] - 1, mobile.position[1]]
-                == MapElement.empty
-            ):
-                self.map[mobile.position[0] - 1, mobile.position[1]] = element
-                self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
-                mobile.position = (mobile.position[0] - 1, mobile.position[1])
+            # list of possible actions
+            possibleActions = [False] * (len(Actions) - 1)  # up,down,
+            # left,right, up_right, up_left, down_right, down_left
+            upDownLeftRight = [Actions.UP, Actions.DOWN, Actions.LEFT, Actions.RIGHT]
+            movements = [
+                [-1, 0, 0],
+                [1, 0, self.size],
+                [0, -1, 0],
+                [0, 1, self.size],
+                # no need for boundaries for diagonal movements
+                [-1, 1],
+                [-1, -1],
+                [1, 1],
+                [1, -1],
+            ]
+            for actionIdx in range(len(upDownLeftRight)):
+                shift0 = movements[actionIdx][0]
+                shift1 = movements[actionIdx][1]
+                boundary = movements[actionIdx][2]
+                if actionIdx < 2:  # test UP and DOWN
+                    if boundary == 0:
+                        possibleActions[actionIdx] = (
+                            mobile.position[0] + shift0 > boundary
+                            and self.map[
+                                mobile.position[0] + shift0, mobile.position[1]
+                            ]
+                            == MapElement.empty
+                        )
+                    else:
+                        possibleActions[actionIdx] = (
+                            mobile.position[0] + shift0 < boundary
+                            and self.map[
+                                mobile.position[0] + shift0, mobile.position[1]
+                            ]
+                            == MapElement.empty
+                        )
+                else:  # test LEFT and RIGHT
+                    if boundary == 0:
+                        possibleActions[actionIdx] = (
+                            mobile.position[1] + shift1 > boundary
+                            and self.map[
+                                mobile.position[0], mobile.position[1] + shift1
+                            ]
+                            == MapElement.empty
+                        )
+                    else:
+                        possibleActions[actionIdx] = (
+                            mobile.position[1] + shift1 < boundary
+                            and self.map[
+                                mobile.position[0], mobile.position[1] + shift1
+                            ]
+                            == MapElement.empty
+                        )
 
-        if action == Actions.DOWN:
-            if (
-                mobile.position[0] + 1 < self.size
-                and self.map[mobile.position[0] + 1, mobile.position[1]]
-                == MapElement.empty
-            ):
-                self.map[mobile.position[0] + 1, mobile.position[1]] = element
-                self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
-                mobile.position = (mobile.position[0] + 1, mobile.position[1])
+            # fill the remaining possible actions by testing the HV ones
+            possibleActions[4] = possibleActions[0] and possibleActions[3]
+            possibleActions[5] = possibleActions[0] and possibleActions[2]
+            possibleActions[6] = possibleActions[1] and possibleActions[3]
+            possibleActions[7] = possibleActions[1] and possibleActions[2]
 
-        if action == Actions.LEFT:
-            if (
-                mobile.position[1] - 1 > 0
-                and self.map[mobile.position[0], mobile.position[1] - 1]
-                == MapElement.empty
-            ):
-                self.map[mobile.position[0], mobile.position[1] - 1] = element
+            # do the action if it is possible
+            actionIdx = int(action) - 1  # not considering NOOP
+            if possibleActions[actionIdx]:
+                shift0 = movements[actionIdx][0]
+                shift1 = movements[actionIdx][1]
+                # action is possible, let's do it
+                self.map[
+                    mobile.position[0] + shift0, mobile.position[1] + shift1
+                ] = element
+                mobile.position = (
+                    mobile.position[0] + shift0,
+                    mobile.position[1] + shift1,
+                )
                 self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
-                mobile.position = (mobile.position[0], mobile.position[1] - 1)
-
-        if action == Actions.RIGHT:
-            if (
-                mobile.position[1] + 1 < self.size
-                and self.map[mobile.position[0], mobile.position[1] + 1]
-                == MapElement.empty
-            ):
-                self.map[mobile.position[0], mobile.position[1] + 1] = element
-                self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
-                mobile.position = (mobile.position[0], mobile.position[1] + 1)
 
     @classmethod
     def agent_capture(

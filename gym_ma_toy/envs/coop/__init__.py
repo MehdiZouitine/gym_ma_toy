@@ -1,1 +1,1 @@
-from .team_catcher import TeamCatcher
+from .team_catcher_base import TeamCatcherBase

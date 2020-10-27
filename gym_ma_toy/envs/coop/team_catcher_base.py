@@ -8,13 +8,13 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 
 
-from .game import World, Actions, MapElement, ElementsColors
+from .game_base import WorldBase, Actions, MapElement, ElementsColors
 
 TypeObservation = Dict[str, Union[np.ndarray, Dict[str, int]]]
 NB_ACTIONS = len(Actions)
 
 
-class TeamCatcher(gym.Env):
+class TeamCatcherBase(gym.Env):
     """
     Interface gym for the team catcher game.
     This is a map where targets are randomly placed.
@@ -65,12 +65,13 @@ class TeamCatcher(gym.Env):
     def __init__(
         self,
         grid_size: int = 64,
-        nb_agents: int = 256,
+        nb_agents_hv: int = 128,
+        nb_agents_diag: int = 128,
         nb_targets: int = 128,
         nb_mobiles: int = 32,
         seed: Optional[int] = None,
     ):
-
+        nb_agents = nb_agents_hv + nb_agents_diag
         if (grid_size - 1) ** 2 < nb_agents + nb_targets:
             population = nb_agents + nb_targets + nb_mobiles
             maximum_population = (grid_size - 1) ** 2
@@ -102,9 +103,10 @@ class TeamCatcher(gym.Env):
             }
         )
 
-        self.world = World(
+        self.world = WorldBase(
             size=grid_size,
-            nb_agents=nb_agents,
+            nb_agents_hv=nb_agents_hv,
+            nb_agents_diag=nb_agents_diag,
             nb_targets=nb_targets,
             nb_mobiles=nb_mobiles,
             seed=seed,

@@ -2,8 +2,10 @@ import gym
 import gym_ma_toy
 import time
 
+VERSION = "v2"
+
 if __name__ == "__main__":
-    env = gym.make("team_catcher-v0")
+    env = gym.make("team_catcher-" + VERSION)
 
     obs = env.reset()
     done = False

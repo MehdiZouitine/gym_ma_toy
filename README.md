@@ -34,21 +34,26 @@ env.close()
 
 ### Team catcher:
 
-This is a map where targets are randomly placed.
-The objective of the agents is that there are at least two agents on an adjacent cell of a target to catch it.
-When the target is caught the environment returns a reward point.
+This is a map where targets are randomly placed. Some targets do not move
+, other move randomly (one square at the time).
+Agents must capture all targets. Targets are captures when there are at least
+ two agents on an adjacent cell of a target.
+The environement gives a reward point for each captured target.
 The episode ends when there is no more target on the map.
-
-
 <p align="center">
 <img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/team_catcher_gif.gif?raw=true" alt="ma_gym_logo">
 </p>
-
-The number of agent and target can be arbitrarily large.
+The number of agents and targets can be arbitrarily large.
 <p align="center">
 <img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/team_catcher_gif_big.gif?raw=true" alt="ma_gym_logo">
 </p>
+There are currently 3 implemented versions:
 
+- **V0**: This is the simplest environment. Targets (ORANGE) do not move and
+ agents (BLUE) can only move horizontally and vertically.
+- **V1**: Some targets do not move (ORANGE) but some can move randomly (RED).
+- **V2**: Some agents move horizontally/vertically (BLUE), other move
+ diagonally (GREEN)
 
 ### Running multiple environment in parallel
 

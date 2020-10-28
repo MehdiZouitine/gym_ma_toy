@@ -63,8 +63,10 @@ Training of different team catcher configurations using a Grid-net architecture 
 </p>
 
 * 24 agents and 10 targets : 
+<p align="center">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/150100_train_step_25_step.gif?raw=true" alt="ma_gym_logo">
+</p>
 
-https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/150100_train_step_25_step.gif
 
 ### Running multiple environment in parallel
 

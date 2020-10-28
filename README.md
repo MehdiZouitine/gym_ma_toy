@@ -56,10 +56,15 @@ There are currently 3 implemented versions:
  diagonally (GREEN)
 
 #### Some results: 
-Training of different team catcher configurations using a Grid-net architecture : 
+Training of different team catcher configurations using a Grid-net architecture ([link](http://proceedings.mlr.press/v97/han19a/han19a.pdf)) : 
+* 2 agents and 20 targets : 
 <p align="center">
 <img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/sparse_env2agent2.gif?raw=true" alt="ma_gym_logo">
 </p>
+
+* 24 agents and 10 targets : 
+
+https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/150100_train_step_25_step.gif
 
 ### Running multiple environment in parallel
 

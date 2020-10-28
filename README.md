@@ -55,6 +55,12 @@ There are currently 3 implemented versions:
 - **V2**: Some agents move horizontally/vertically (BLUE), other move
  diagonally (GREEN)
 
+#### Some results: 
+Training of different team catcher configurations using a Grid-net architecture : 
+<p align="center">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/sparse_env2agent2.gif?raw=true" alt="ma_gym_logo">
+</p>
+
 ### Running multiple environment in parallel
 
 ```py

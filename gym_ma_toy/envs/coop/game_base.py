@@ -2,7 +2,7 @@ import abc
 import numpy as np
 
 from typing import Tuple, Dict
-from aenum import IntEnum, Enum
+from enum import IntEnum, Enum
 from collections import deque
 
 TypeAction = Dict[str, int]

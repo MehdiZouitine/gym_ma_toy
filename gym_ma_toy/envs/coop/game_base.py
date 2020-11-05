@@ -442,7 +442,7 @@ class WorldBase:
 
         for neighbour in potential_neighborhood:
             if 0 <= neighbour[0] < size and 0 <= neighbour[1] < size:
-                if world_map[neighbour[0], neighbour[1]] == MapElement.agent:
+                if world_map[neighbour[0], neighbour[1]] <= MapElement.agent:
                     n_agent_neighbour += 1
         return n_agent_neighbour >= 2
 

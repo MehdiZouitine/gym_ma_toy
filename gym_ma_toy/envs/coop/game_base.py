@@ -195,6 +195,9 @@ class WorldBase:
     def reset(self):
         # Restart the game
         # At each episode the targets are resuscitated.
+        
+        self.targets = deque()
+        self.mobiles = deque() # Clear the targets and mobiles at each reset
 
         all_positions = [
             (i, j) for j in range(1, self.size - 1) for i in range(1, self.size - 1)

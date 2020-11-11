@@ -195,9 +195,9 @@ class WorldBase:
     def reset(self):
         # Restart the game
         # At each episode the targets are resuscitated.
-        
+
         self.targets = deque()
-        self.mobiles = deque() # Clear the targets and mobiles at each reset
+        self.mobiles = deque()  # Clear the targets and mobiles at each reset
 
         all_positions = [
             (i, j) for j in range(1, self.size - 1) for i in range(1, self.size - 1)
@@ -404,15 +404,19 @@ class WorldBase:
             if possibleActions[actionIdx]:
                 shift0 = movements[actionIdx][0]
                 shift1 = movements[actionIdx][1]
-                # action is possible, let's do it
-                self.map[
-                    mobile.position[0] + shift0, mobile.position[1] + shift1
-                ] = element
-                mobile.position = (
-                    mobile.position[0] + shift0,
-                    mobile.position[1] + shift1,
-                )
-                self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
+                # Action seems possible but we have to check if there is nobody on the spot
+                if (
+                    self.map[mobile.position[0] + shift0, mobile.position[1] + shift1]
+                    == MapElement.empty
+                ):
+                    self.map[
+                        mobile.position[0] + shift0, mobile.position[1] + shift1
+                    ] = element
+                    mobile.position = (
+                        mobile.position[0] + shift0,
+                        mobile.position[1] + shift1,
+                    )
+                    self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
 
     @classmethod
     def agent_capture(

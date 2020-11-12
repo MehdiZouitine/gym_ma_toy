@@ -342,19 +342,28 @@ class WorldBase:
             # list of possible actions
             possibleActions = [False] * (len(Actions) - 1)  # up,down,
             # left,right, up_right, up_left, down_right, down_left
-            upDownLeftRight = [Actions.UP, Actions.DOWN, Actions.LEFT, Actions.RIGHT]
+            action_space = [
+                Actions.UP,
+                Actions.DOWN,
+                Actions.LEFT,
+                Actions.RIGHT,
+                Actions.UP_RIGHT,
+                Actions.UP_LEFT,
+                Actions.DOWN_RIGHT,
+                Actions.DOWN_LEFT,
+            ]
             movements = [
                 [-1, 0, 0],
                 [1, 0, self.size],
                 [0, -1, 0],
                 [0, 1, self.size],
-                # no need for boundaries for diagonal movements
-                [-1, 1],
-                [-1, -1],
-                [1, 1],
-                [1, -1],
+                # diagonal movements have 2 boundaries
+                [-1, 1, 0, self.size],
+                [-1, -1, 0, 0],
+                [1, 1, self.size, self.size],
+                [1, -1, self.size, 0],
             ]
-            for actionIdx in range(len(upDownLeftRight)):
+            for actionIdx in range(len(action_space)):
                 shift0 = movements[actionIdx][0]
                 shift1 = movements[actionIdx][1]
                 boundary = movements[actionIdx][2]
@@ -375,7 +384,7 @@ class WorldBase:
                             ]
                             == MapElement.empty
                         )
-                else:  # test LEFT and RIGHT
+                elif actionIdx < 4:  # test LEFT and RIGHT
                     if boundary == 0:
                         possibleActions[actionIdx] = (
                             mobile.position[1] + shift1 > boundary
@@ -393,30 +402,75 @@ class WorldBase:
                             == MapElement.empty
                         )
 
-            # fill the remaining possible actions by testing the HV ones
-            possibleActions[4] = possibleActions[0] and possibleActions[3]
-            possibleActions[5] = possibleActions[0] and possibleActions[2]
-            possibleActions[6] = possibleActions[1] and possibleActions[3]
-            possibleActions[7] = possibleActions[1] and possibleActions[2]
+                elif actionIdx >= 4:  # test diagonal moove
+                    boundary0 = movements[actionIdx][2]
+                    boundary1 = movements[actionIdx][3]
+
+                    if (boundary0 == 0) and (boundary1 == self.size):  # UP_RIGHT
+                        possibleActions[actionIdx] = (
+                            (mobile.position[0] + shift0 >= boundary0)
+                            and (mobile.position[1] + shift1 < boundary1)
+                            and (
+                                self.map[
+                                    mobile.position[0] + shift0,
+                                    mobile.position[1] + shift1,
+                                ]
+                                == MapElement.empty
+                            )
+                        )
+                    elif (boundary0 == 0) and (boundary1 == 0):  # UP_LEFT
+                        possibleActions[actionIdx] = (
+                            (mobile.position[0] + shift0 >= boundary0)
+                            and (mobile.position[1] + shift1 >= boundary1)
+                            and (
+                                self.map[
+                                    mobile.position[0] + shift0,
+                                    mobile.position[1] + shift1,
+                                ]
+                                == MapElement.empty
+                            )
+                        )
+                    elif (boundary0 == self.size) and (
+                        boundary1 == self.size
+                    ):  # DOWN_RIGHT
+                        possibleActions[actionIdx] = (
+                            (mobile.position[0] + shift0 < boundary0)
+                            and (mobile.position[1] + shift1 < boundary1)
+                            and (
+                                self.map[
+                                    mobile.position[0] + shift0,
+                                    mobile.position[1] + shift1,
+                                ]
+                                == MapElement.empty
+                            )
+                        )
+
+                    else:  # DOWN_LEFT
+                        possibleActions[actionIdx] = (
+                            (mobile.position[0] + shift0 < boundary0)
+                            and (mobile.position[1] + shift1 >= boundary1)
+                            and (
+                                self.map[
+                                    mobile.position[0] + shift0,
+                                    mobile.position[1] + shift1,
+                                ]
+                                == MapElement.empty
+                            )
+                        )
 
             # do the action if it is possible
             actionIdx = int(action) - 1  # not considering NOOP
             if possibleActions[actionIdx]:
                 shift0 = movements[actionIdx][0]
                 shift1 = movements[actionIdx][1]
-                # Action seems possible but we have to check if there is nobody on the spot
-                if (
-                    self.map[mobile.position[0] + shift0, mobile.position[1] + shift1]
-                    == MapElement.empty
-                ):
-                    self.map[
-                        mobile.position[0] + shift0, mobile.position[1] + shift1
-                    ] = element
-                    mobile.position = (
-                        mobile.position[0] + shift0,
-                        mobile.position[1] + shift1,
-                    )
-                    self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
+                self.map[
+                    mobile.position[0] + shift0, mobile.position[1] + shift1
+                ] = element
+                mobile.position = (
+                    mobile.position[0] + shift0,
+                    mobile.position[1] + shift1,
+                )
+                self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
 
     @classmethod
     def agent_capture(

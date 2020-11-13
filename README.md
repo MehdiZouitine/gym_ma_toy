@@ -54,7 +54,8 @@ There are currently 3 implemented versions:
 - **V1**: Some targets do not move (ORANGE) but some can move randomly (RED).
 - **V2**: Some agents move horizontally/vertically (BLUE), other move
  diagonally (GREEN)
-
+- **V3**:  **Partially observable** (fog of war like) environment with some agents move horizontally/vertically (BLUE), other move
+ diagonally (GREEN)
 #### Some results: 
 Training of different team catcher configurations using a Grid-net architecture ([link](http://proceedings.mlr.press/v97/han19a/han19a.pdf)) : 
 * 2 agents and 20 targets : 

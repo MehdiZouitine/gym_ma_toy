@@ -7,9 +7,9 @@ register(
     entry_point="gym_ma_toy.envs:TeamCatcherBase",
     kwargs={
         "grid_size": 64,
-        "nb_agents_hv": 256,
+        "nb_agents_hv": 16,
         "nb_agents_diag": 0,
-        "nb_targets": 128,
+        "nb_targets": 32,
         "nb_mobiles": 0,
     },
 )
@@ -20,10 +20,10 @@ register(
     entry_point="gym_ma_toy.envs:TeamCatcherBase",
     kwargs={
         "grid_size": 64,
-        "nb_agents_hv": 256,
+        "nb_agents_hv": 16,
         "nb_agents_diag": 0,
-        "nb_targets": 128,
-        "nb_mobiles": 32,
+        "nb_targets": 16,
+        "nb_mobiles": 16,
     },
 )
 
@@ -33,9 +33,24 @@ register(
     entry_point="gym_ma_toy.envs:TeamCatcherBase",
     kwargs={
         "grid_size": 64,
-        "nb_agents_hv": 128,
-        "nb_agents_diag": 128,
-        "nb_targets": 128,
-        "nb_mobiles": 32,
+        "nb_agents_hv": 8,
+        "nb_agents_diag": 8,
+        "nb_targets": 16,
+        "nb_mobiles": 16,
+    },
+)
+
+# Partially observable
+register(
+    id="team_catcher-v3",
+    entry_point="gym_ma_toy.envs:TeamCatcherBase",
+    kwargs={
+        "grid_size": 64,
+        "nb_agents_hv": 8,
+        "nb_agents_diag": 8,
+        "nb_targets": 16,
+        "nb_mobiles": 16,
+        "fow_agents_hv": 2,
+        "fow_agents_diag": 4,
     },
 )

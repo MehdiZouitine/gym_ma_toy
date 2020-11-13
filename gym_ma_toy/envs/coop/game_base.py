@@ -29,6 +29,14 @@ class ElementsColors(Enum):
     target = [255, 128, 0]  # ORANGE
 
 
+class AuxElementColors(Enum):
+    fog = [170, 170, 170]  # GREY
+
+
+class AuxElement(IntEnum):
+    fog = 97  # fog SHOULD BE ALWAYS GREATER THAN THE OTHER ENUM VALUE
+
+
 class MapElement(IntEnum):
     agent_diag = -3
     agent_hv = -2
@@ -134,6 +142,8 @@ class WorldBase:
         nb_agents_diag: int,
         nb_targets: int,
         nb_mobiles: int,
+        fow_agents_hv: int,
+        fow_agents_diag: int,
         seed: int,
     ):
         """
@@ -150,6 +160,11 @@ class WorldBase:
             Number of targets.
         nb_mobiles : int
             Number of mobile targets.
+        fow_agents_hv : int
+            Size of the radius of vision of hv agents.
+        fow_agents_diag : int
+            Size of the radius of vision of diag agents
+
         seed : int
             Random seed.
 
@@ -163,6 +178,9 @@ class WorldBase:
         self.nb_agents = nb_agents
         self.nb_targets = nb_targets
         self.nb_mobiles = nb_mobiles
+        self.fow_agents_hv = fow_agents_hv
+        self.fow_agents_diag = fow_agents_diag
+        self.partially_observable = (fow_agents_hv + fow_agents_diag) > 0
         self.map = np.zeros((self.size, self.size))  # initialize map
         self.agents = dict()
         self.targets = deque()
@@ -286,8 +304,42 @@ class WorldBase:
                 else:
                     self.targets.remove(target)
 
+    def _create_fow_state(self, state):
+
+        fog_free_map = state["map"]
+        agents_pos = state["agent_position"]
+
+        x = np.arange(0, self.size)
+        y = np.arange(0, self.size)
+        fog = np.ones_like(fog_free_map) * AuxElement.fog
+
+        for _, pos in agents_pos.items():
+
+            if fog_free_map[pos] == MapElement.agent_hv:
+                r = self.fow_agents_hv
+
+            elif fog_free_map[pos] == MapElement.agent_diag:
+                r = self.fow_agents_diag
+
+            cx, cy = pos
+            mask = (
+                (x[np.newaxis, :] - cx) ** 2 + (y[:, np.newaxis] - cy) ** 2 <= r ** 2
+            ).T  # transposition is needded
+            fog[mask] = 1
+
+        foged_map = np.ones_like(fog_free_map) * AuxElement.fog
+        foged_map[fog == 1] = fog_free_map[fog == 1]
+
+        return {
+            "map": self.map,
+            "agent_position": self.agent_position,
+            "partial_map": foged_map,
+        }
+
     @property
     def get_state(self) -> dict:
+        if self.partially_observable:
+            return self._create_fow_state(self.state)
         return self.state
 
     @property
@@ -463,6 +515,7 @@ class WorldBase:
             if possibleActions[actionIdx]:
                 shift0 = movements[actionIdx][0]
                 shift1 = movements[actionIdx][1]
+                self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
                 self.map[
                     mobile.position[0] + shift0, mobile.position[1] + shift1
                 ] = element
@@ -470,7 +523,6 @@ class WorldBase:
                     mobile.position[0] + shift0,
                     mobile.position[1] + shift1,
                 )
-                self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
 
     @classmethod
     def agent_capture(

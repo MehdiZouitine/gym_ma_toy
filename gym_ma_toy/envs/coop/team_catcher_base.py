@@ -7,8 +7,9 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-
-from .game_base import WorldBase, Actions, MapElement, ElementsColors
+from .render_utils import render_observable, render_partially_observable
+from .space_utils import create_observation_space
+from .game_base import WorldBase, Actions, MapElement, AuxElement, ElementsColors
 
 TypeObservation = Dict[str, Union[np.ndarray, Dict[str, int]]]
 NB_ACTIONS = len(Actions)
@@ -69,6 +70,8 @@ class TeamCatcherBase(gym.Env):
         nb_agents_diag: int = 128,
         nb_targets: int = 128,
         nb_mobiles: int = 32,
+        fow_agents_hv: int = 0,
+        fow_agents_diag: int = 0,
         seed: Optional[int] = None,
     ):
         nb_agents = nb_agents_hv + nb_agents_diag
@@ -81,26 +84,14 @@ class TeamCatcherBase(gym.Env):
             )
 
         self.grid_size = grid_size
+        self.partially_observable = (fow_agents_hv + fow_agents_diag) > 0
         self.action_space = spaces.Dict(
             {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agents)}
         )
-        self.observation_space = spaces.Dict(
-            {
-                "map": spaces.Box(
-                    low=0, high=2, shape=(grid_size, grid_size), dtype=np.float32
-                ),
-                "agent_position": spaces.Dict(
-                    {
-                        f"agent_{i+1}": spaces.Tuple(
-                            (
-                                spaces.Discrete(grid_size - 1),
-                                spaces.Discrete(grid_size - 1),
-                            )
-                        )
-                        for i in range(nb_agents)
-                    }
-                ),
-            }
+        self.observation_space = create_observation_space(
+            grid_size=grid_size,
+            nb_agents=nb_agents,
+            partially_observable=self.partially_observable,
         )
 
         self.world = WorldBase(
@@ -109,6 +100,8 @@ class TeamCatcherBase(gym.Env):
             nb_agents_diag=nb_agents_diag,
             nb_targets=nb_targets,
             nb_mobiles=nb_mobiles,
+            fow_agents_hv=fow_agents_hv,
+            fow_agents_diag=fow_agents_diag,
             seed=seed,
         )
 
@@ -149,18 +142,18 @@ class TeamCatcherBase(gym.Env):
         return self.obs
 
     def render(self, mode="human", close=False, fig_size=8):
-
-        image = np.zeros((self.grid_size, self.grid_size, 3), dtype=np.uint8)
-
-        assert len(MapElement) == len(ElementsColors)
-        for element, color in zip(MapElement, ElementsColors):
-            image[self.obs["map"] == element] = color.value
-
-        image = Image.fromarray(image)
-        image = image.resize(
-            (self.grid_size * fig_size, self.grid_size * fig_size), Image.NEAREST
-        )
-        image = np.array(image, dtype=np.uint8)
+        if self.partially_observable:
+            image = render_partially_observable(
+                grid_size=self.grid_size,
+                obs=self.obs,
+                fig_size=fig_size,
+            )
+        else:
+            image = render_observable(
+                grid_size=self.grid_size,
+                obs=self.obs,
+                fig_size=fig_size,
+            )
         if mode == "rgb_array":
             return image
         else:

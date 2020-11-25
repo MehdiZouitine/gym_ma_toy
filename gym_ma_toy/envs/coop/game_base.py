@@ -344,6 +344,8 @@ class WorldBase:
 
     @property
     def state(self) -> dict:
+        if self.partially_observable:
+            return self._create_fow_state(self.state)
         return {"map": self.map, "agent_position": self.agent_position}
 
     def _update_position_state(self):

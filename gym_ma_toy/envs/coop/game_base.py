@@ -34,7 +34,7 @@ class AuxElementColors(Enum):
 
 
 class AuxElement(IntEnum):
-    fog = 97  # fog SHOULD BE ALWAYS GREATER THAN THE OTHER ENUM VALUE
+    fog = 3  # fog SHOULD BE ALWAYS GREATER THAN THE OTHER ENUM VALUE
 
 
 class MapElement(IntEnum):

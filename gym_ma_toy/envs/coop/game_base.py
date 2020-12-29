@@ -267,7 +267,8 @@ class WorldBase:
                 self.mobiles.append(MobileTarget(position=targets_pos[i]))
 
         self._fill_map()
-        self._do_captures()
+        self.capturedTargets, self.capturedMobiles = self._do_captures()
+        # self._do_captures()
         self._update_position_state()
 
     def _fill_map(self):

@@ -110,10 +110,10 @@ class Agent(BaseElem):
 
 class Target(BaseElem):
     def __init__(
-        self, position: Tuple[int, int], has_hv: bool = False, has_diag: bool = False
+        self, position: Tuple[int, int], has_hv: bool = False, has_diag: bool = False,id_elem=0
     ):
         super().__init__(
-            id_elem=0,
+            id_elem=id_elem,
             position=position,
             mobility=False,
             controllability=False,
@@ -124,8 +124,8 @@ class Target(BaseElem):
 
 
 class MobileTarget(Target):
-    def __init__(self, position: Tuple[int, int]):
-        super(MobileTarget, self).__init__(position, has_hv=True, has_diag=False)
+    def __init__(self, position: Tuple[int, int],id_elem=0):
+        super(MobileTarget, self).__init__(position, has_hv=True, has_diag=False,id_elem=id_elem)
         self.mobile = True
 
 
@@ -259,12 +259,12 @@ class WorldBase:
                     }
                 )
                 n_diag -= 1
-
+        targetIdx = len(agents_pos) + 1
         for i in range(self.nb_targets + self.nb_mobiles):
             if i < self.nb_targets:
-                self.targets.append(Target(position=targets_pos[i]))
+                self.targets.append(Target(position=targets_pos[i],id_elem=targetIdx+i))
             else:
-                self.mobiles.append(MobileTarget(position=targets_pos[i]))
+                self.mobiles.append(MobileTarget(position=targets_pos[i],id_elem=targetIdx+i))
 
         self._fill_map()
         self.capturedTargets, self.capturedMobiles = self._do_captures()

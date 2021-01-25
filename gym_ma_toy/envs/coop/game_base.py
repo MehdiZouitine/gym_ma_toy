@@ -596,9 +596,10 @@ class WorldBase:
             Dict of actions for each agent : {"agent_1" : 0, "agent_2" : 3, ..., "agent_n": 1}
         """
 
+        self.capturedTargets, self.capturedMobiles = self._do_captures()
         for agent_id, action in joint_action.items():
             self._update_agent(action=action, agent_id=agent_id)
         self._move_mobiles()
-        self.capturedTargets, self.capturedMobiles = self._do_captures()
+        
         self._fill_map()
         self._update_position_state()

@@ -52,12 +52,15 @@ There are currently 3 implemented versions:
 - **V0**: This is the simplest environment. Targets (ORANGE) do not move and
  agents (BLUE) can only move horizontally and vertically.
   <p align="center">
-<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/V0_XL.gif?raw=true" alt="ma_gym_logo">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/v0_XL.gif?raw=true" alt="ma_gym_logo">
 </p>
  <p align="center">
-<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/V0_2.gif?raw=true" alt="ma_gym_logo">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/v0_2.gif?raw=true" alt="ma_gym_logo">
 </p>
 - **V1**: Some targets do not move (ORANGE) but some can move randomly (RED).
+-  <p align="center">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/V1.gif?raw=true" alt="ma_gym_logo">
+</p>
 - **V2**: Some agents move horizontally/vertically (BLUE), other move
  diagonally (GREEN)
 - **V3**:  **Partially observable** (fog of war like) environment with some agents move horizontally/vertically (BLUE), other move

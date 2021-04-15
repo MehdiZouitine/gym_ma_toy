@@ -1,4 +1,4 @@
-## Toy Multi agent environment
+## Toy Multi agent environment (README IN PROGRESS)
 
 <p align="center">
   <img height="220px" src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/logo.png?raw=true" alt="ma_gym_logo">

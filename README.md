@@ -40,10 +40,8 @@ Agents must capture all targets. Targets are captures when there are at least
  two agents on an adjacent cell of a target.
 The environement gives a reward point for each captured target.
 The episode ends when there is no more target on the map.
-<p align="center">
-<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/pres_tc.gif?raw=true" alt="ma_gym_logo">
-</p>
 The number of agents and targets can be arbitrarily large.
+
 <p align="center">
 <img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/big_gif_tc.gif?raw=true" alt="ma_gym_logo">
 </p>

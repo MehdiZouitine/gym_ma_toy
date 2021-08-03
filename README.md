@@ -47,7 +47,7 @@ The number of agents and targets can be arbitrarily large.
 </p>
 There are currently 3 implemented versions:
 
-- **V0**: This is the simplest environment. Targets (ORANGE) do not move and
+- **V0**: This is the simplest environment. Targets (RED) do not move and
  agents (BLUE) can only move horizontally and vertically.
  
 <p align="center">

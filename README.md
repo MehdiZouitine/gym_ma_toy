@@ -1,4 +1,4 @@
-## Toy Multi agent environment (README IN PROGRESS)
+## Toy Multi agent environment
 
 <p align="center">
   <img height="220px" src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/logo.png?raw=true" alt="ma_gym_logo">
@@ -62,21 +62,16 @@ There are currently 3 implemented versions:
  diagonally (GREEN)
  
  <p align="center">
-<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/hetero?raw=true" alt="ma_gym_logo">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/hétero.gif?raw=true" alt="ma_gym_logo">
 </p>
 - **V3**:  **Partially observable** (fog of war like) environment with some agents move horizontally/vertically (BLUE), other move
  diagonally (GREEN)
-#### Some results: 
-Training of different team catcher configurations using a Grid-net architecture ([link](http://proceedings.mlr.press/v97/han19a/han19a.pdf)) : 
-* 2 agents and 20 targets : 
-<p align="center">
-<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/sparse_env2agent2.gif?raw=true" alt="ma_gym_logo">
+ 
+  <p align="center">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/snake.gif?raw=true" alt="ma_gym_logo">
 </p>
 
-* 24 agents and 10 targets : 
-<p align="center">
-<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/150100_train_step_25_step.gif?raw=true" alt="ma_gym_logo">
-</p>
+
 
 
 ### Running multiple environment in parallel

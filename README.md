@@ -50,7 +50,7 @@ There are currently 3 implemented versions:
 - **V0**: This is the simplest environment. Targets (ORANGE) do not move and
  agents (BLUE) can only move horizontally and vertically.
   <p align="center">
-<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/v0_XL.gif?raw=true" alt="ma_gym_logo">
+<img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/squad1.gif?raw=true" alt="ma_gym_logo">
 </p>
  <p align="center">
 <img  src="https://github.com/MehdiZouitine/gym_ma_toy/blob/master/img/v0_2.gif?raw=true" alt="ma_gym_logo">

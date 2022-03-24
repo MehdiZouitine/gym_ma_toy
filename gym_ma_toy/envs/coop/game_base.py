@@ -345,11 +345,14 @@ class WorldBase:
 
     @property
     def state(self) -> dict:
-        return {"map": self.map, "agent_position": self.agent_position}
+        return {"map": self.map, "position_mask": self.position_mask}
 
     def _update_position_state(self):
         # Updates the current state of the game (which will be returned by the step and reset method of the gym interface)
         self.agent_position = {k: v.position for k, v in self.agents.items()}
+        self.position_mask = np.zeros_like(self.map)
+        position_list = np.array([v.position for v in self.agents.values()])
+        self.position_mask[position_list[:,0],position_list[:,1]] = 1
 
     def _update_agent(self, action: int, agent_id: str):
         """
@@ -423,24 +426,27 @@ class WorldBase:
                 if actionIdx < 2:  # test UP and DOWN
                     if boundary == 0:
                         possibleActions[actionIdx] = (
-                            mobile.position[0] + shift0 > boundary
+                            mobile.position[0] + shift0 >= boundary
                             and self.map[
                                 mobile.position[0] + shift0, mobile.position[1]
                             ]
                             == MapElement.empty
                         )
+                        
                     else:
                         possibleActions[actionIdx] = (
-                            mobile.position[0] + shift0 < boundary
+                            mobile.position[0] + shift0 < boundary 
                             and self.map[
                                 mobile.position[0] + shift0, mobile.position[1]
                             ]
                             == MapElement.empty
                         )
+                        # print(actionIdx,shift0,possibleActions[actionIdx],mobile.position,self.map[mobile.position[0] + shift0, mobile.position[1]])
+                        # a = input()
                 elif actionIdx < 4:  # test LEFT and RIGHT
                     if boundary == 0:
                         possibleActions[actionIdx] = (
-                            mobile.position[1] + shift1 > boundary
+                            mobile.position[1] + shift1 >= boundary
                             and self.map[
                                 mobile.position[0], mobile.position[1] + shift1
                             ]

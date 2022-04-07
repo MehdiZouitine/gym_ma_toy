@@ -308,7 +308,7 @@ class WorldBase:
     def _create_fow_state(self, state):
 
         fog_free_map = state["map"]
-        agents_pos = state["agent_position"]
+        agents_pos = self.agent_position
 
         x = np.arange(0, self.size)
         y = np.arange(0, self.size)
@@ -333,7 +333,7 @@ class WorldBase:
 
         return {
             "map": self.map,
-            "agent_position": self.agent_position,
+            "position_mask": self.position_mask,
             "partial_map": foged_map,
         }
 
@@ -346,6 +346,7 @@ class WorldBase:
     @property
     def state(self) -> dict:
         return {"map": self.map, "position_mask": self.position_mask}
+
 
     def _update_position_state(self):
         # Updates the current state of the game (which will be returned by the step and reset method of the gym interface)

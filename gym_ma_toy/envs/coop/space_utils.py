@@ -9,39 +9,23 @@ def create_observation_space(
         return spaces.Dict(
             {
                 "map": spaces.Box(
-                    low=0, high=2, shape=(grid_size, grid_size), dtype=np.float32
-                ),
-                "agent_position": spaces.Dict(
-                    {
-                        f"agent_{i+1}": spaces.Tuple(
-                            (
-                                spaces.Discrete(grid_size - 1),
-                                spaces.Discrete(grid_size - 1),
-                            )
-                        )
-                        for i in range(nb_agents)
-                    }
+                    low=-3, high=2, shape=(grid_size, grid_size), dtype=np.float32
                 ),
                 "partial_map": spaces.Box(
-                    low=0, high=2, shape=(grid_size, grid_size), dtype=np.float32
+                    low=-3, high=2, shape=(grid_size, grid_size), dtype=np.float32
+                ),
+                "agent_mask": spaces.Box(
+                    low=1, high=1, shape=(grid_size, grid_size), dtype=np.int32
                 ),
             }
         )
     return spaces.Dict(
         {
             "map": spaces.Box(
-                low=0, high=2, shape=(grid_size, grid_size), dtype=np.float32
+                low=-3, high=2, shape=(grid_size, grid_size), dtype=np.float32
             ),
-            "agent_position": spaces.Dict(
-                {
-                    f"agent_{i+1}": spaces.Tuple(
-                        (
-                            spaces.Discrete(grid_size - 1),
-                            spaces.Discrete(grid_size - 1),
-                        )
-                    )
-                    for i in range(nb_agents)
-                }
-            ),
+            "agent_mask": spaces.Box(
+                    low=1, high=1, shape=(grid_size, grid_size), dtype=np.int32
+                ),
         }
     )

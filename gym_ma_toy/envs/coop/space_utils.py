@@ -14,7 +14,7 @@ def create_observation_space(
                 "partial_map": spaces.Box(
                     low=-3, high=2, shape=(grid_size, grid_size), dtype=np.float32
                 ),
-                "agent_mask": spaces.Box(
+                "position_mask": spaces.Box(
                     low=1, high=1, shape=(grid_size, grid_size), dtype=np.int32
                 ),
             }
@@ -24,7 +24,7 @@ def create_observation_space(
             "map": spaces.Box(
                 low=-3, high=2, shape=(grid_size, grid_size), dtype=np.float32
             ),
-            "agent_mask": spaces.Box(
+            "position_mask": spaces.Box(
                     low=1, high=1, shape=(grid_size, grid_size), dtype=np.int32
                 ),
         }

@@ -1,7 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import gymnasium as gym
 
 from .game_base import MapElement, AuxElement, ElementsColors, AuxElementColors
 

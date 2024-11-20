@@ -1,5 +1,5 @@
 from gymnasium.envs.registration import register
-from .envs.coop import team_catcher_base
+# from .envs import team_catcher_base
 
 # No mobile targets
 register(

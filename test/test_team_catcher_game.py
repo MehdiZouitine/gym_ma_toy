@@ -1,6 +1,5 @@
-from gym_ma_toy.envs.coop.game_base import WorldBase
-from gym_ma_toy.envs.coop.team_catcher_base import TeamCatcherBase
-import numpy as np
+from gym_ma_toy.envs.game_base import WorldBase
+from gym_ma_toy.envs.team_catcher_base import TeamCatcherBase
 
 
 class TestGame:

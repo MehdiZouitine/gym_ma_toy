@@ -18,18 +18,19 @@ pip install -e .
 ### How to use it ?
 
 ```python
-import gym
+import gymnasium as gym
 import gym_ma_toy
 
 env = gym.make('team_catcher-v0')
 
-obs = env.reset()
+obs, info = env.reset()
 done = False
-while not done:
+truncated = False
+while not done or not truncated:
     env.render(mode='rgb_array')
     
     action = env.action_space.sample()
-    obs, reward, done, info = env.step(action)
+    obs, reward, truncated, done, info = env.step(action)
 env.close()
 
 ```
@@ -80,7 +81,7 @@ There are currently 3 implemented versions:
 
 ```py
 # Running 8 environment in parallel
-import gym
+import gymnasium as gym
 import gym_ma_toy
 
 env = gym.vector.make('team_catcher-v0',num_envs=8, asynchronous=True)  

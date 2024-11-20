@@ -110,7 +110,11 @@ class Agent(BaseElem):
 
 class Target(BaseElem):
     def __init__(
-        self, position: Tuple[int, int], has_hv: bool = False, has_diag: bool = False,id_elem=0
+        self,
+        position: Tuple[int, int],
+        has_hv: bool = False,
+        has_diag: bool = False,
+        id_elem=0,
     ):
         super().__init__(
             id_elem=id_elem,
@@ -124,13 +128,14 @@ class Target(BaseElem):
 
 
 class MobileTarget(Target):
-    def __init__(self, position: Tuple[int, int],id_elem=0):
-        super(MobileTarget, self).__init__(position, has_hv=True, has_diag=False,id_elem=id_elem)
+    def __init__(self, position: Tuple[int, int], id_elem=0):
+        super(MobileTarget, self).__init__(
+            position, has_hv=True, has_diag=False, id_elem=id_elem
+        )
         self.mobile = True
 
 
 class WorldBase:
-
     """
     Implementation of the team catcher game. The interface will collect observations from that game.
     """
@@ -234,7 +239,7 @@ class WorldBase:
 
         n_hv = self.nb_agents_hv
         n_diag = self.nb_agents_diag
-        for (agentIdx, pos) in enumerate(agents_pos):
+        for agentIdx, pos in enumerate(agents_pos):
             if n_hv > 0:
                 self.agents.update(
                     {
@@ -262,9 +267,13 @@ class WorldBase:
         targetIdx = len(agents_pos) + 1
         for i in range(self.nb_targets + self.nb_mobiles):
             if i < self.nb_targets:
-                self.targets.append(Target(position=targets_pos[i],id_elem=targetIdx+i))
+                self.targets.append(
+                    Target(position=targets_pos[i], id_elem=targetIdx + i)
+                )
             else:
-                self.mobiles.append(MobileTarget(position=targets_pos[i],id_elem=targetIdx+i))
+                self.mobiles.append(
+                    MobileTarget(position=targets_pos[i], id_elem=targetIdx + i)
+                )
 
         self._fill_map()
         self.capturedTargets, self.capturedMobiles = self._do_captures()
@@ -306,7 +315,6 @@ class WorldBase:
                     self.targets.remove(target)
 
     def _create_fow_state(self, state):
-
         fog_free_map = state["map"]
         agents_pos = self.agent_position
 
@@ -315,7 +323,6 @@ class WorldBase:
         fog = np.ones_like(fog_free_map) * AuxElement.fog
 
         for _, pos in agents_pos.items():
-
             if fog_free_map[pos] == MapElement.agent_hv:
                 r = self.fow_agents_hv
 
@@ -324,13 +331,12 @@ class WorldBase:
 
             cx, cy = pos
             mask = (
-                (x[np.newaxis, :] - cx) ** 2 + (y[:, np.newaxis] - cy) ** 2 <= r ** 2
+                (x[np.newaxis, :] - cx) ** 2 + (y[:, np.newaxis] - cy) ** 2 <= r**2
             ).T  # transposition is needded
             fog[mask] = 1
 
         foged_map = np.ones_like(fog_free_map) * AuxElement.fog
         foged_map[fog == 1] = fog_free_map[fog == 1]
-
         return {
             "map": self.map,
             "position_mask": self.position_mask,
@@ -347,13 +353,12 @@ class WorldBase:
     def state(self) -> dict:
         return {"map": self.map, "position_mask": self.position_mask}
 
-
     def _update_position_state(self):
         # Updates the current state of the game (which will be returned by the step and reset method of the gym interface)
         self.agent_position = {k: v.position for k, v in self.agents.items()}
-        self.position_mask = np.zeros_like(self.map)
+        self.position_mask = np.zeros_like(self.map, dtype=np.int32)
         position_list = np.array([v.position for v in self.agents.values()])
-        self.position_mask[position_list[:,0],position_list[:,1]] = 1
+        self.position_mask[position_list[:, 0], position_list[:, 1]] = 1
 
     def _update_agent(self, action: int, agent_id: str):
         """
@@ -433,17 +438,15 @@ class WorldBase:
                             ]
                             == MapElement.empty
                         )
-                        
+
                     else:
                         possibleActions[actionIdx] = (
-                            mobile.position[0] + shift0 < boundary 
+                            mobile.position[0] + shift0 < boundary
                             and self.map[
                                 mobile.position[0] + shift0, mobile.position[1]
                             ]
                             == MapElement.empty
                         )
-                        # print(actionIdx,shift0,possibleActions[actionIdx],mobile.position,self.map[mobile.position[0] + shift0, mobile.position[1]])
-                        # a = input()
                 elif actionIdx < 4:  # test LEFT and RIGHT
                     if boundary == 0:
                         possibleActions[actionIdx] = (
@@ -524,9 +527,9 @@ class WorldBase:
                 shift0 = movements[actionIdx][0]
                 shift1 = movements[actionIdx][1]
                 self.map[mobile.position[0], mobile.position[1]] = MapElement.empty
-                self.map[
-                    mobile.position[0] + shift0, mobile.position[1] + shift1
-                ] = element
+                self.map[mobile.position[0] + shift0, mobile.position[1] + shift1] = (
+                    element
+                )
                 mobile.position = (
                     mobile.position[0] + shift0,
                     mobile.position[1] + shift1,
@@ -594,19 +597,26 @@ class WorldBase:
                 action = Actions(np.random.randint(len(Actions)))
                 self._update_mobile(action, mobile, False)
 
-    def update(self, joint_action: Actions):
+    def update(self, joint_action_grid: Actions):
         """Update map, agents and targets state
 
         Parameters
         ----------
         joint_action : TypeAction
-            Dict of actions for each agent : {"agent_1" : 0, "agent_2" : 3, ..., "agent_n": 1}
+            Square grid of action
         """
+        # we want to have Dict of actions for each agent : {"agent_1" : 0, "agent_2" : 3, ..., "agent_n": 1} from the joint action grid
+        # iter on each agent, gets the agent position, read the action on the grid and create the dict of actions
+        joint_action = {}
+        for agent_name, agent in self.agents.items():
+            agent_position = agent.position
+            action = joint_action_grid[agent_position[0], agent_position[1]]
+            joint_action[agent_name] = action
 
         self.capturedTargets, self.capturedMobiles = self._do_captures()
         for agent_id, action in joint_action.items():
             self._update_agent(action=action, agent_id=agent_id)
         self._move_mobiles()
-        
+
         self._fill_map()
         self._update_position_state()

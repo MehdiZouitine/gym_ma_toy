@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import gym
+import gymnasium as gym
 
 from .game_base import MapElement, AuxElement, ElementsColors, AuxElementColors
 
@@ -30,7 +30,6 @@ def render_partially_observable(grid_size, obs, fig_size):
 
 
 def render_observable(grid_size, obs, fig_size):
-
     image = np.zeros((grid_size, grid_size, 3), dtype=np.uint8)
 
     assert len(MapElement) == len(ElementsColors)

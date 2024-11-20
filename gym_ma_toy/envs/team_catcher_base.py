@@ -1,15 +1,11 @@
 from typing import Tuple, Dict, Union, Any, Optional
-
-import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
-import gym
-from gym import error, spaces, utils
-from gym.utils import seeding
+import gymnasium as gym
+from gymnasium import spaces
 
 from .render_utils import render_observable, render_partially_observable
 from .space_utils import create_observation_space
-from .game_base import WorldBase, Actions, MapElement, AuxElement, ElementsColors
+from .game_base import WorldBase, Actions
 
 TypeObservation = Dict[str, Union[np.ndarray, Dict[str, int]]]
 NB_ACTIONS = len(Actions)
@@ -48,20 +44,21 @@ class TeamCatcherBase(gym.Env):
         In the following example we will show a classic gym loop
         using the team catcher environment.
 
-        >>> import gym
+        >>> import gymnasium as gym
         >>> import gym_ma_toy
 
         >>> env = gym.make('team_catcher-v0')
         >>> done = False
-        >>> obs = env.reset()
-        >>> while not done:
+        >>> truncated = False
+        >>> obs, info = env.reset()
+        >>> while not done or not truncated:
         ...    env.render()
-        ...    obs, reward, done, info = env.step(env.action_space.sample())
+        ...    obs, reward, truncated, done, info = env.step(env.action_space.sample())
         >>> env.close()
 
     """
 
-    metadata = {"render.modes": ["human", "rgb_array"]}
+    metadata = {"render_modes": ["rgb_array"]}
 
     def __init__(
         self,
@@ -85,8 +82,8 @@ class TeamCatcherBase(gym.Env):
 
         self.grid_size = grid_size
         self.partially_observable = (fow_agents_hv + fow_agents_diag) > 0
-        self.action_space = spaces.Dict(
-            {f"agent_{i+1}": spaces.Discrete(NB_ACTIONS) for i in range(nb_agents)}
+        self.action_space = spaces.Box(
+            low=0, high=NB_ACTIONS - 1, shape=(grid_size, grid_size), dtype=np.int32
         )
         self.observation_space = create_observation_space(
             grid_size=grid_size,
@@ -117,7 +114,6 @@ class TeamCatcherBase(gym.Env):
     def step(
         self, action: Actions
     ) -> Tuple[TypeObservation, float, bool, Dict[str, Any]]:
-
         self.world.update(action)  # apply action to the engine
 
         self.obs = self.world.get_state
@@ -132,16 +128,16 @@ class TeamCatcherBase(gym.Env):
         self.nb_step += 1
         info = {"step": self.nb_step, "target alive": self.nb_targets_alive}
 
-        return self.obs, reward, done, info
+        return self.obs, reward, done, False, info
 
-    def reset(self) -> TypeObservation:
+    def reset(self, seed=None, options=None) -> TypeObservation:
         self.world.reset()
         self.obs = self.world.get_state
         self.nb_step = 0
         self.nb_targets_alive = self.world.nb_targets_alive
-        return self.obs
+        return self.obs, {"step": self.nb_step, "target alive": self.nb_targets_alive}
 
-    def render(self, mode="human", close=False, fig_size=8):
+    def render(self, close=False, fig_size=8):
         if self.partially_observable:
             image = render_partially_observable(
                 grid_size=self.grid_size,
@@ -154,15 +150,7 @@ class TeamCatcherBase(gym.Env):
                 obs=self.obs,
                 fig_size=fig_size,
             )
-        if mode == "rgb_array":
-            return image
-        else:
-            from gym.envs.classic_control import rendering
-
-            if self.viewer is None:
-                self.viewer = rendering.SimpleImageViewer()
-            self.viewer.imshow(image)
-            return self.viewer.isopen
+        return image
 
     def close(self):
         if self.viewer:
@@ -175,8 +163,9 @@ class TeamCatcherBase(gym.Env):
 
     @classmethod
     def compute_reward(cls, capturedTargets: int, capturedMobiles: int) -> int:
+        # - 1 at each step to encourage the agents to catch the targets ASAP (survival reward)
         # double points are awarded for captured mobiles
-        return capturedTargets + 2 * capturedMobiles
+        return -1 + capturedTargets + 2 * capturedMobiles
 
     @classmethod
     def episode_end(cls, current_nb_targets_alive: int) -> bool:

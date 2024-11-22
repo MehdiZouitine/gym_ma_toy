@@ -163,9 +163,9 @@ class TeamCatcherBase(gym.Env):
 
     @classmethod
     def compute_reward(cls, capturedTargets: int, capturedMobiles: int) -> int:
-        # - 1 at each step to encourage the agents to catch the targets ASAP (survival reward)
+        # - 0.02 at each step to encourage the agents to catch the targets ASAP (survival reward)
         # double points are awarded for captured mobiles
-        return -1 + capturedTargets + 2 * capturedMobiles
+        return -0.02 + capturedTargets + 2 * capturedMobiles
 
     @classmethod
     def episode_end(cls, current_nb_targets_alive: int) -> bool:

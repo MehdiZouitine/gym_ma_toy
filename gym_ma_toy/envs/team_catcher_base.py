@@ -79,11 +79,14 @@ class TeamCatcherBase(gym.Env):
                 f" nb_agents + nb_targets + nb_mobiles ({population}) should "
                 f"be less than (grid_size - 1) ** 2 ({maximum_population})"
             )
-
         self.grid_size = grid_size
         self.partially_observable = (fow_agents_hv + fow_agents_diag) > 0
+
+        high_action = NB_ACTIONS - 5  # 0: NOOP, 1: UP, 2: DOWN, 3: LEFT, 4: RIGHT
+        if nb_agents_diag > 0:
+            high_action = NB_ACTIONS - 1
         self.action_space = spaces.Box(
-            low=0, high=NB_ACTIONS - 1, shape=(grid_size, grid_size), dtype=np.int32
+            low=0, high=high_action, shape=(grid_size, grid_size), dtype=np.int32
         )
         self.observation_space = create_observation_space(
             grid_size=grid_size,
